@@ -3,9 +3,9 @@
         @ChildContent
     </nav>
 </aside>
-@if (Open && ShowOverlay)
+@if (ShowOverlay)
 {
-    <button class="cb-side-nav__overlay" type="button" aria-label="Close navigation" @onclick="Close"></button>
+    <button class="cb-side-nav__overlay" type="button" aria-label="Close navigation" data-cb-nav-overlay @onclick="Close"></button>
 }
 
 @code {

@@ -315,6 +315,11 @@ a.cb-link:hover { text-decoration: underline; }
   z-index: 6500;
   border: 0;
   background: transparent;
+  display: none;
+}
+
+.cb-side-nav__overlay--visible {
+  display: block;
 }
 
 .cb-content {

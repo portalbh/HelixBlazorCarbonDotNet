@@ -4,6 +4,8 @@ using HelixCarbon.Server.Data;
 using HelixCarbon.Server.Endpoints;
 using HelixCarbon.Server.Extensions;
 using HelixCarbon.Server.Middleware;
+using CarbonBlazor;
+using ApexCharts;
 #if AuthAzure
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
@@ -16,6 +18,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHelixCarbonData();
 builder.Services.AddHelixCarbonAuth(builder.Configuration);
+builder.Services.AddCarbonBlazor();
+builder.Services.AddApexCharts();
+builder.Services.AddHelixCarbonClientForServerPrerender();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
@@ -40,7 +45,9 @@ else
     app.UseHsts();
 }
 
-app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+app.UseWhen(
+    context => !context.Request.Path.StartsWithSegments("/api"),
+    branch => branch.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true));
 app.UseHttpsRedirection();
 app.UseAntiforgery();
 

@@ -6,10 +6,10 @@ namespace HelixCarbon.Client.Services;
 public sealed class HelixApiClient(HttpClient http)
 {
     public async Task<DashboardMetricsDto?> GetDashboardMetricsAsync() =>
-        await http.GetFromJsonAsync<DashboardMetricsDto>("api/dashboard/metrics");
+        await GetJsonOrNullAsync<DashboardMetricsDto>("api/dashboard/metrics");
 
     public async Task<IReadOnlyList<ProductDto>?> GetProductsAsync() =>
-        await http.GetFromJsonAsync<IReadOnlyList<ProductDto>>("api/products");
+        await GetJsonOrNullAsync<IReadOnlyList<ProductDto>>("api/products");
 
     public async Task<ProductDto?> CreateProductAsync(CreateProductRequest request)
     {
@@ -26,7 +26,7 @@ public sealed class HelixApiClient(HttpClient http)
     }
 
     public async Task<IReadOnlyList<TenantDto>?> GetTenantsAsync() =>
-        await http.GetFromJsonAsync<IReadOnlyList<TenantDto>>("api/tenants");
+        await GetJsonOrNullAsync<IReadOnlyList<TenantDto>>("api/tenants");
 
     public async Task<TenantDto?> OnboardAsync(OnboardingRequest request)
     {
@@ -49,7 +49,25 @@ public sealed class HelixApiClient(HttpClient http)
     }
 
     public async Task<UserProfileDto?> GetProfileAsync() =>
-        await http.GetFromJsonAsync<UserProfileDto>("api/auth/profile");
+        await GetJsonOrNullAsync<UserProfileDto>("api/auth/profile");
 
     public async Task LogoutAsync() => await http.PostAsync("api/auth/logout", null);
+
+    private async Task<T?> GetJsonOrNullAsync<T>(string requestUri)
+    {
+        try
+        {
+            var response = await http.GetAsync(requestUri);
+            if (!response.IsSuccessStatusCode)
+            {
+                return default;
+            }
+
+            return await response.Content.ReadFromJsonAsync<T>();
+        }
+        catch (HttpRequestException)
+        {
+            return default;
+        }
+    }
 }

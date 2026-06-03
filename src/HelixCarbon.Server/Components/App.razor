@@ -7,9 +7,7 @@
     <base href="/" />
     <ResourcePreloader />
     <link rel="stylesheet" href="_content/CarbonBlazor/carbon-blazor.css" />
-    <link rel="stylesheet" href="@Assets["app.css"]" />
-    <link rel="stylesheet" href="@Assets["helixcarbon.css"]" />
-    <link rel="stylesheet" href="_content/HelixCarbon.Client/css/tailwind.css" />
+    <link rel="stylesheet" href="@Assets["app-shell.css"]" />
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet @rendermode="InteractiveWebAssembly" />
@@ -18,6 +16,11 @@
 <body>
     <Routes />
     <script src="@Assets["_framework/blazor.web.js"]"></script>
+    <script type="module">
+        import { initAppShell } from './_content/CarbonBlazor/carbon-blazor.js';
+        initAppShell();
+        Blazor.addEventListener('enhancedload', initAppShell);
+    </script>
 </body>
 
 </html>

@@ -1,26 +1,16 @@
 using ApexCharts;
 using CarbonBlazor;
-using HelixCarbon.Client.Services;
+using HelixCarbon.Client;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 #if AuthAzure
 using Microsoft.Authentication.WebAssembly.Msal;
-using Microsoft.Authentication.WebAssembly.Msal.Models;
 #endif
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.Services.AddCarbonBlazor();
 builder.Services.AddApexCharts();
-
-builder.Services.AddScoped<TenantHeaderHandler>();
-builder.Services.AddScoped<HelixApiClient>();
-
-builder.Services.AddScoped(sp =>
-{
-    var handler = sp.GetRequiredService<TenantHeaderHandler>();
-    handler.InnerHandler = new HttpClientHandler();
-    return new HttpClient(handler) { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) };
-});
+builder.Services.AddHelixCarbonWasmClient(new Uri(builder.HostEnvironment.BaseAddress));
 
 #if AuthAzure
 builder.Services.AddMsalAuthentication(options =>

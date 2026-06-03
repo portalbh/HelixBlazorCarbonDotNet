@@ -1,7 +1,7 @@
 <header class="@ClassName" @attributes="AdditionalAttributes">
     @if (ShowMenuButton)
     {
-        <button class="cb-header__button" type="button" aria-label="@MenuLabel" aria-expanded="@SideNavOpen" aria-controls="@MenuControls" @onclick="ToggleSideNav">
+        <button class="cb-header__button" type="button" aria-label="@MenuLabel" aria-expanded="@SideNavOpen" aria-controls="@MenuControls" data-cb-menu-toggle @onclick="ToggleSideNav">
             <CbIcon Name="CbIconName.Menu" Size="20" />
         </button>
     }

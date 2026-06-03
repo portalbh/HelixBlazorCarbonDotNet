@@ -1,0 +1,18 @@
+<select class="cb-header__select" aria-label="@Label" data-cb-theme-select>
+    @foreach (var option in ThemeOptions)
+    {
+        <option value="@option.Value">@option.Label</option>
+    }
+</select>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Theme";
+
+    private static readonly (string Value, string Label)[] ThemeOptions =
+    [
+        (nameof(CbTheme.White), "White"),
+        (nameof(CbTheme.G10), "Gray 10"),
+        (nameof(CbTheme.G90), "Gray 90"),
+        (nameof(CbTheme.G100), "Gray 100")
+    ];
+}

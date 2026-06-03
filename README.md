@@ -8,7 +8,7 @@
 - **SQLite** (dev) / **PostgreSQL** (prod)
 - **Shared-database multi-tenancy** (subdomain + `X-Tenant` header)
 - **Blazor-ApexCharts** dashboard
-- Optional **Tailwind** utilities (`npm run build:css` in Client)
+- **Carbon theme switcher** in the header (White / Gray 10 / 90 / 100)
 
 ## Template parameters
 
@@ -109,10 +109,3 @@ git clone --depth 1 https://github.com/portalbh/CarbonBlazor.git _carbon_tmp
 Copy-Item -Recurse -Force _carbon_tmp\CarbonBlazor lib\CarbonBlazor
 ```
 
-## Tailwind
-
-```powershell
-cd src/HelixCarbon.Client
-npm install
-npm run build:css
-```

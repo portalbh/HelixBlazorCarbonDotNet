@@ -1,4 +1,4 @@
-/* HelixCarbon app overrides — prefer Carbon tokens via CbThemeProvider */
+/* App shell overrides — prefer Carbon tokens via CbThemeProvider */
 .helix-page-title {
     margin-bottom: 1rem;
 }
@@ -9,3 +9,23 @@
     color: var(--cds-text-on-color, #fff);
     font-size: 0.875rem;
 }
+
+.helix-tenant-chip {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--cds-border-subtle, #525252);
+}
+
+.helix-form {
+    max-width: 28rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.helix-chart {
+    margin-top: 1.5rem;
+}
+
+.helix-util-flex { display: flex; }
+.helix-util-gap-4 { gap: 1rem; }
