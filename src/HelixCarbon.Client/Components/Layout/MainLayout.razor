@@ -2,17 +2,19 @@
 @inject IConfiguration Configuration
 
 <CbThemeProvider Theme="CbTheme.G100" Class="helix-shell">
-    <CbHeader ProductName="HelixCarbon" Prefix="SaaS" MenuLabel="Menu" MenuControls="helix-side-nav">
-        <NavContent>
-            <CbHeaderNavLink Href="/" Match="NavLinkMatch.All">Home</CbHeaderNavLink>
-            <CbHeaderNavLink Href="/dashboard">Dashboard</CbHeaderNavLink>
-            <CbHeaderNavLink Href="/products">Products</CbHeaderNavLink>
-            <CbHeaderNavLink Href="/tenants">Tenants</CbHeaderNavLink>
-            <CbHeaderNavLink Href="/profile">Profile</CbHeaderNavLink>
-        </NavContent>
+    <CbHeader MenuLabel="Menu" MenuControls="helix-side-nav">
+        <NameContent>
+            <HelixWorkspaceTitle />
+        </NameContent>
         <Actions>
-            <CbThemeSwitcher />
-            <span class="helix-tenant-chip">@TenantSlug</span>
+            <div class="helix-header-actions">
+                <CbThemeSwitcher />
+#if AuthBFF || AuthAdvanced
+                <HelixProfileMenuBff />
+#elif AuthAzure
+                <HelixProfileMenuAzure />
+#endif
+            </div>
         </Actions>
     </CbHeader>
     <CbSideNav id="helix-side-nav">
@@ -21,15 +23,23 @@
         <CbSideNavLink Href="/products" IconName="CbIconName.DocumentBlank">Products</CbSideNavLink>
         <CbSideNavLink Href="/tenants" IconName="CbIconName.User">Tenants</CbSideNavLink>
         <CbSideNavLink Href="/onboarding" IconName="CbIconName.Add">Onboarding</CbSideNavLink>
-        <CbSideNavLink Href="/login" IconName="CbIconName.User">Login</CbSideNavLink>
-        <CbSideNavLink Href="/register" IconName="CbIconName.Add">Register</CbSideNavLink>
+#if AuthBFF || AuthAdvanced
+        <HelixSideNavAuthBff />
+#elif AuthAzure
+        <HelixSideNavAuthAzure />
+#endif
     </CbSideNav>
     <CbContent>
-        <div class="helix-dev-banner">Tenant header: X-Tenant = @TenantSlug (subdomain also supported)</div>
+        @if (ShowTenantBanner)
+        {
+            <div class="helix-dev-banner">Tenant header: X-Tenant = @TenantSlug (subdomain also supported)</div>
+        }
         @Body
     </CbContent>
 </CbThemeProvider>
 
 @code {
     private string TenantSlug => Configuration["App:DefaultTenantSlug"] ?? "demo";
+
+    private bool ShowTenantBanner => Configuration.GetValue("App:ShowTenantBanner", false);
 }

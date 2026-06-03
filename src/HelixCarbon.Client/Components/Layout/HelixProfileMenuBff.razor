@@ -1,0 +1,60 @@
+@rendermode InteractiveWebAssembly
+@implements IAsyncDisposable
+@inject AuthStateService AuthState
+@inject HelixApiClient Api
+@inject NavigationManager Nav
+@inject IJSRuntime Js
+
+<HelixProfileMenuShell @ref="_shell" IsAuthenticated="AuthState.IsAuthenticated" MenuLabel="@MenuLabel">
+    @if (AuthState.IsAuthenticated)
+    {
+        <button class="cb-menu__item" type="button" role="menuitem" @onclick="GoProfileAsync">Profile</button>
+        <button class="cb-menu__item" type="button" role="menuitem" @onclick="LogoutAsync">Logout</button>
+    }
+    else
+    {
+        <button class="cb-menu__item" type="button" role="menuitem" @onclick="GoLoginAsync">Sign in</button>
+    }
+</HelixProfileMenuShell>
+
+@code {
+    private HelixProfileMenuShell? _shell;
+
+    private string MenuLabel => AuthState.IsAuthenticated ? "Profile menu" : "Sign in";
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthState.Changed += OnAuthChanged;
+        await AuthState.EnsureLoadedAsync();
+    }
+
+    private void OnAuthChanged() => InvokeAsync(StateHasChanged);
+
+    private Task GoProfileAsync()
+    {
+        _shell?.Close();
+        Nav.NavigateTo("/profile");
+        return Task.CompletedTask;
+    }
+
+    private Task GoLoginAsync()
+    {
+        _shell?.Close();
+        Nav.NavigateTo("/login");
+        return Task.CompletedTask;
+    }
+
+    private async Task LogoutAsync()
+    {
+        _shell?.Close();
+        await Api.LogoutAsync();
+        AuthState.Clear();
+        Nav.NavigateTo("/login", forceLoad: true);
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        AuthState.Changed -= OnAuthChanged;
+        return ValueTask.CompletedTask;
+    }
+}

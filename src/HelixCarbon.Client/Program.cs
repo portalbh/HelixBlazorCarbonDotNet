@@ -24,6 +24,10 @@ builder.Services.AddMsalAuthentication(options =>
 });
 #endif
 
+#if AuthAzure
+builder.Services.AddAuthorizationCore();
+#endif
+
 #if AuthBFF || AuthAdvanced
 builder.Services.AddAuthorizationCore();
 #endif

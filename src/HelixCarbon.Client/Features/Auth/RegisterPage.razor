@@ -1,11 +1,12 @@
 @page "/register"
 @rendermode InteractiveWebAssembly
 @inject HelixApiClient Api
+@inject AuthStateService AuthState
 
 <PageTitle>Register user</PageTitle>
 
-<h1 class="helix-page-title">Register tenant user</h1>
-<p>Requires an authenticated tenant admin (BFF / Advanced auth).</p>
+<h1 class="cb-page-header__title">Register tenant user</h1>
+<p class="cb-page-header__description">Requires an authenticated tenant admin (BFF / Advanced auth).</p>
 
 <div class="helix-form helix-form--narrow">
     <CbTextInput Label="Email" @bind-Value="_email" />
@@ -27,5 +28,9 @@
     {
         var ok = await Api.RegisterAsync(new RegisterRequest(_email, _password, TenantRole.User));
         _message = ok ? "User registered." : "Registration failed. Sign in as admin first.";
+        if (ok)
+        {
+            await AuthState.RefreshAsync();
+        }
     }
 }

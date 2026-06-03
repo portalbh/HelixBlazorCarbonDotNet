@@ -1,12 +1,12 @@
 @page "/"
-@rendermode InteractiveWebAssembly
+@inject IConfiguration Configuration
 
-<PageTitle>HelixCarbon</PageTitle>
+<PageTitle>@WorkspaceTitle</PageTitle>
 
 <header class="cb-page-header">
     <div class="cb-page-header__body">
-        <h1 class="cb-page-header__title">HelixCarbon SaaS</h1>
-        <p class="cb-page-header__description">T3-inspired multi-tenant starter with Carbon Design, Dapper, and ApexCharts.</p>
+        <h1 class="cb-page-header__title">@WorkspaceTitle</h1>
+        <p class="cb-page-header__description">Multi-tenant workspace with Carbon Design, Dapper, and ApexCharts.</p>
     </div>
 </header>
 
@@ -19,3 +19,16 @@
         <li>Create workspaces on <CbLink Href="/onboarding">Onboarding</CbLink></li>
     </ul>
 </CbTile>
+
+@code {
+    private string WorkspaceTitle
+    {
+        get
+        {
+            var slug = Configuration["App:DefaultTenantSlug"] ?? "demo";
+            return string.IsNullOrWhiteSpace(slug)
+                ? "Workspace"
+                : char.ToUpperInvariant(slug[0]) + slug[1..];
+        }
+    }
+}

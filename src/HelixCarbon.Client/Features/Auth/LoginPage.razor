@@ -1,11 +1,12 @@
 @page "/login"
 @rendermode InteractiveWebAssembly
 @inject HelixApiClient Api
+@inject AuthStateService AuthState
 @inject NavigationManager Navigation
 
 <PageTitle>Login</PageTitle>
 
-<h1 class="helix-page-title">Sign in</h1>
+<h1 class="cb-page-header__title">Sign in</h1>
 
 <div class="helix-form helix-form--narrow">
     <CbTextInput Label="Email" @bind-Value="_email" />
@@ -32,6 +33,7 @@
             return;
         }
 
+        await AuthState.RefreshAsync();
         Navigation.NavigateTo("/dashboard");
     }
 }

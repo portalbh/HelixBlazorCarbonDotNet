@@ -1,0 +1,42 @@
+@rendermode InteractiveWebAssembly
+@implements IDisposable
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@if (_isLoaded)
+{
+    @if (_isAuthenticated)
+    {
+        <CbSideNavLink Href="/login" IconName="CbIconName.User">Account</CbSideNavLink>
+    }
+    else
+    {
+        <CbSideNavLink Href="/login" IconName="CbIconName.User">Sign in</CbSideNavLink>
+    }
+}
+
+@code {
+    private bool _isLoaded;
+    private bool _isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
+        await RefreshAzureAuthStateAsync();
+        _isLoaded = true;
+    }
+
+    private async void OnAuthenticationStateChanged(Task<AuthenticationState> task)
+    {
+        await RefreshAzureAuthStateAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RefreshAzureAuthStateAsync()
+    {
+        var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _isAuthenticated = state.User.Identity?.IsAuthenticated == true;
+    }
+
+    public void Dispose() => AuthenticationStateProvider.AuthenticationStateChanged -= OnAuthenticationStateChanged;
+}

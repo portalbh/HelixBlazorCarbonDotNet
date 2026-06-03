@@ -9,6 +9,7 @@ public static class HelixCarbonClientServiceCollectionExtensions
     {
         services.AddScoped<TenantHeaderHandler>();
         services.AddScoped<HelixApiClient>();
+        services.AddScoped<AuthStateService>();
         services.AddScoped(sp =>
         {
             var handler = sp.GetRequiredService<TenantHeaderHandler>();

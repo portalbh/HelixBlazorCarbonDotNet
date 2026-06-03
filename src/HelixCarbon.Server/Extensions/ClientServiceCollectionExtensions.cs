@@ -13,6 +13,7 @@ public static class ClientServiceCollectionExtensions
         services.AddScoped<TenantHeaderHandler>();
         services.AddScoped<ServerRequestForwardingHandler>();
         services.AddScoped<HelixApiClient>();
+        services.AddScoped<AuthStateService>();
         services.AddScoped(sp =>
         {
             var forwarding = sp.GetRequiredService<ServerRequestForwardingHandler>();

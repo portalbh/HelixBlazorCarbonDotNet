@@ -5,7 +5,6 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100%;
-  background: #161616;
 }
 
 .cb-theme.helix-shell {
@@ -13,7 +12,11 @@ body {
   background: var(--cb-background);
 }
 
-/* Desktop: sidenav rail full height, header aligned to content column */
+.helix-workspace-title {
+  font-weight: 600;
+  color: var(--cb-text-primary, #f4f4f4);
+}
+
 @media (min-width: 1056px) {
   .helix-shell .cb-side-nav {
     top: 0;
@@ -30,6 +33,7 @@ body {
     left: 16rem;
     right: 0;
     width: auto;
+    z-index: 8100;
     background: var(--cb-background);
     border-bottom: 1px solid var(--cb-border-subtle);
   }
@@ -57,7 +61,14 @@ body {
 @media (max-width: 1055px) {
   .helix-shell .cb-header {
     position: sticky;
+    top: 0;
     left: 0;
+    z-index: 8100;
+  }
+
+  .helix-shell .cb-side-nav {
+    top: 3rem;
+    z-index: 8000;
   }
 
   .helix-shell .cb-content.cb-content--with-side-nav {
@@ -68,37 +79,23 @@ body {
 }
 
 .helix-dev-banner {
-  margin: calc(-1 * var(--cb-spacing-06, 1.5rem)) calc(-1 * var(--cb-spacing-06, 1.5rem)) var(--cb-spacing-06, 1.5rem);
+  margin: 0 0 var(--cb-spacing-06, 1.5rem);
   padding: var(--cb-spacing-04, 0.75rem) var(--cb-spacing-05, 1rem);
   background: var(--cb-layer-accent, #393939);
   color: var(--cb-text-primary, #f4f4f4);
   font-size: 0.875rem;
-  border-bottom: 1px solid var(--cb-border-subtle, #525252);
-}
-
-.helix-tenant-chip {
-  display: inline-flex;
-  align-items: center;
-  height: 2rem;
-  padding: 0 var(--cb-spacing-04, 0.75rem);
-  font-size: 0.75rem;
   border: 1px solid var(--cb-border-subtle, #525252);
-  color: var(--cb-text-secondary, #c6c6c6);
 }
 
-.helix-page-title {
-  font-size: 1.75rem;
-  font-weight: 400;
-  line-height: 1.2;
-  margin: 0 0 var(--cb-spacing-02, 0.25rem);
-  color: var(--cb-text-primary, #f4f4f4);
+.helix-header-actions {
+  display: flex;
+  align-items: stretch;
+  height: 3rem;
 }
 
-.helix-page-lead {
-  margin: 0 0 var(--cb-spacing-07, 2rem);
-  color: var(--cb-text-secondary, #c6c6c6);
-  font-size: 0.875rem;
-  max-width: 42rem;
+.helix-header-actions__btn,
+.helix-profile-menu > .cb-icon-btn {
+  border-left: 1px solid var(--cb-border-subtle, #525252);
 }
 
 .helix-section {
@@ -166,6 +163,13 @@ body {
   padding: var(--cb-spacing-05, 1rem);
   background: var(--cb-layer, #262626);
   border: 1px solid var(--cb-border-subtle, #525252);
+}
+
+.helix-chart--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 20rem;
 }
 
 .helix-data-table .cb-data-table {

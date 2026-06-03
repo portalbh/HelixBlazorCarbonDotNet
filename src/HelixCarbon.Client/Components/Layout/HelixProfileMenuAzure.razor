@@ -1,0 +1,55 @@
+@rendermode InteractiveWebAssembly
+@implements IDisposable
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Nav
+
+<HelixProfileMenuShell @ref="_shell" IsAuthenticated="_isAuthenticated" MenuLabel="@MenuLabel">
+    @if (_isAuthenticated)
+    {
+        <button class="cb-menu__item" type="button" role="menuitem" @onclick="AzureLogoutAsync">Sign out</button>
+    }
+    else
+    {
+        <button class="cb-menu__item" type="button" role="menuitem" @onclick="AzureLoginAsync">Sign in with Microsoft</button>
+    }
+</HelixProfileMenuShell>
+
+@code {
+    private HelixProfileMenuShell? _shell;
+    private bool _isAuthenticated;
+
+    private string MenuLabel => _isAuthenticated ? "Profile menu" : "Sign in";
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
+        await RefreshAzureAuthStateAsync();
+    }
+
+    private async void OnAuthenticationStateChanged(Task<AuthenticationState> task)
+    {
+        await RefreshAzureAuthStateAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RefreshAzureAuthStateAsync()
+    {
+        var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _isAuthenticated = state.User.Identity?.IsAuthenticated == true;
+    }
+
+    private void AzureLoginAsync()
+    {
+        _shell?.Close();
+        Nav.NavigateTo("authentication/login");
+    }
+
+    private void AzureLogoutAsync()
+    {
+        _shell?.Close();
+        Nav.NavigateTo("authentication/logout");
+    }
+
+    public void Dispose() => AuthenticationStateProvider.AuthenticationStateChanged -= OnAuthenticationStateChanged;
+}

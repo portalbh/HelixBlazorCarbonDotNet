@@ -1,0 +1,82 @@
+@implements IAsyncDisposable
+@inject IJSRuntime Js
+
+<div class="helix-profile-menu cb-overflow-menu" id="@_menuId">
+    <button class="cb-icon-btn helix-header-actions__btn"
+            type="button"
+            aria-label="@MenuLabel"
+            title="@MenuLabel"
+            aria-haspopup="menu"
+            aria-expanded="@_open"
+            @onclick="ToggleMenu">
+        <CbIcon Name="CbIconName.User" />
+    </button>
+    @if (_open)
+    {
+        <div class="cb-menu cb-menu--overflow" role="menu" @onkeydown="OnKeyDown">
+            @ChildContent
+        </div>
+    }
+</div>
+
+@code {
+    private readonly string _menuId = $"helix-profile-menu-{Guid.NewGuid():N}";
+    private DotNetObjectReference<HelixProfileMenuShell>? _dotNetRef;
+    private IJSObjectReference? _module;
+    private bool _open;
+    private bool _listeningForOutsideClick;
+
+    [Parameter] public bool IsAuthenticated { get; set; }
+    [Parameter] public string MenuLabel { get; set; } = "Sign in";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    public void Close()
+    {
+        _open = false;
+        _listeningForOutsideClick = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_open && !_listeningForOutsideClick)
+        {
+            _dotNetRef ??= DotNetObjectReference.Create(this);
+            _module ??= await Js.InvokeAsync<IJSObjectReference>("import", "./_content/CarbonBlazor/carbon-blazor.js");
+            await _module.InvokeVoidAsync("clickOutside", _menuId, _dotNetRef, nameof(CloseFromOutside));
+            _listeningForOutsideClick = true;
+        }
+    }
+
+    private void ToggleMenu()
+    {
+        _open = !_open;
+        if (!_open)
+        {
+            _listeningForOutsideClick = false;
+        }
+    }
+
+    private void OnKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Escape")
+        {
+            Close();
+        }
+    }
+
+    [JSInvokable]
+    public void CloseFromOutside()
+    {
+        Close();
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _dotNetRef?.Dispose();
+        if (_module is not null)
+        {
+            await _module.DisposeAsync();
+        }
+    }
+}

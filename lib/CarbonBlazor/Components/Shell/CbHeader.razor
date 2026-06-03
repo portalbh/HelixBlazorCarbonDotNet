@@ -6,11 +6,18 @@
         </button>
     }
     <a class="cb-header__name" href="@Href">
-        @if (!string.IsNullOrWhiteSpace(Prefix))
+        @if (NameContent is not null)
         {
-            <span class="cb-header__prefix">@Prefix</span>
+            @NameContent
         }
-        <strong>@ProductName</strong>
+        else
+        {
+            @if (!string.IsNullOrWhiteSpace(Prefix))
+            {
+                <span class="cb-header__prefix">@Prefix</span>
+            }
+            <strong>@ProductName</strong>
+        }
     </a>
     <nav class="cb-header__nav" aria-label="@NavLabel">
         @NavContent
@@ -23,6 +30,7 @@
 @code {
     [Parameter] public string ProductName { get; set; } = "CarbonBlazor";
     [Parameter] public string? Prefix { get; set; }
+    [Parameter] public RenderFragment? NameContent { get; set; }
     [Parameter] public string Href { get; set; } = "/";
     [Parameter] public string MenuLabel { get; set; } = "Open navigation";
     [Parameter] public string? MenuControls { get; set; }

@@ -1,70 +1,26 @@
 @page "/dashboard"
-@rendermode InteractiveWebAssembly
-@inject HelixApiClient Api
+@inject IConfiguration Configuration
 
 <PageTitle>Dashboard</PageTitle>
 
 <header class="cb-page-header">
     <div class="cb-page-header__body">
         <h1 class="cb-page-header__title">Tenant dashboard</h1>
-        <p class="cb-page-header__description">Revenue and product metrics for the active tenant.</p>
+        <p class="cb-page-header__description">Revenue and product metrics for @WorkspaceLabel.</p>
     </div>
 </header>
 
-@if (_loading)
-{
-    <CbInlineLoading Description="Loading metrics..." />
-}
-else if (_metrics is null)
-{
-    <CbNotification Kind="CbNotificationKind.Error" Title="Unable to load metrics" Subtitle="@_error" />
-}
-else
-{
-    <div class="helix-chart">
-        <ApexChart TItem="ChartPoint" Title="Revenue by period" Height="320">
-            <ApexPointSeries TItem="ChartPoint"
-                             Items="_chartPoints"
-                             Name="Revenue"
-                             SeriesType="SeriesType.Bar"
-                             XValue="e => e.Label"
-                             YValue="e => e.Value" />
-        </ApexChart>
-    </div>
-    <CbTile>
-        <p>Products in tenant: <strong>@(_metrics.ProductCounts.LastOrDefault())</strong></p>
-    </CbTile>
-}
+<DashboardMetricsPanel />
 
 @code {
-    private bool _loading = true;
-    private string? _error;
-    private DashboardMetricsDto? _metrics;
-    private List<ChartPoint> _chartPoints = [];
-
-    protected override async Task OnInitializedAsync()
+    private string WorkspaceLabel
     {
-        try
+        get
         {
-            _metrics = await Api.GetDashboardMetricsAsync();
-            if (_metrics is not null)
-            {
-                _chartPoints = _metrics.Labels
-                    .Select((label, i) => new ChartPoint(
-                        label,
-                        _metrics.Revenue.ElementAtOrDefault(i)))
-                    .ToList();
-            }
-        }
-        catch (Exception ex)
-        {
-            _error = ex.Message;
-        }
-        finally
-        {
-            _loading = false;
+            var slug = Configuration["App:DefaultTenantSlug"] ?? "demo";
+            return string.IsNullOrWhiteSpace(slug)
+                ? "the active workspace"
+                : $"workspace {slug}";
         }
     }
-
-    private sealed record ChartPoint(string Label, decimal Value);
 }

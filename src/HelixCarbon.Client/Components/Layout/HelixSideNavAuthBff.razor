@@ -1,0 +1,28 @@
+@rendermode InteractiveWebAssembly
+@implements IDisposable
+@inject AuthStateService AuthState
+
+@if (AuthState.IsLoaded)
+{
+    @if (AuthState.IsAuthenticated)
+    {
+        <CbSideNavLink Href="/profile" IconName="CbIconName.User">Profile</CbSideNavLink>
+    }
+    else
+    {
+        <CbSideNavLink Href="/login" IconName="CbIconName.User">Login</CbSideNavLink>
+        <CbSideNavLink Href="/register" IconName="CbIconName.Add">Register</CbSideNavLink>
+    }
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        AuthState.Changed += OnAuthChanged;
+        await AuthState.EnsureLoadedAsync();
+    }
+
+    private void OnAuthChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => AuthState.Changed -= OnAuthChanged;
+}

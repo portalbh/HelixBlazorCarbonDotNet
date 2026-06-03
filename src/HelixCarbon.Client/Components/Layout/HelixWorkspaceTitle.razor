@@ -1,0 +1,28 @@
+@rendermode InteractiveWebAssembly
+@implements IDisposable
+@inject AuthStateService AuthState
+@inject IConfiguration Configuration
+
+<strong class="helix-workspace-title">@Title</strong>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        AuthState.Changed += OnAuthChanged;
+        await AuthState.EnsureLoadedAsync();
+    }
+
+    private string Title =>
+        !string.IsNullOrWhiteSpace(AuthState.Profile?.TenantName)
+            ? AuthState.Profile.TenantName
+            : FormatSlug(Configuration["App:DefaultTenantSlug"] ?? "demo");
+
+    private static string FormatSlug(string slug) =>
+        string.IsNullOrWhiteSpace(slug)
+            ? "Workspace"
+            : char.ToUpperInvariant(slug[0]) + slug[1..];
+
+    private void OnAuthChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => AuthState.Changed -= OnAuthChanged;
+}

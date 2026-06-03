@@ -1,10 +1,12 @@
 @page "/profile"
 @rendermode InteractiveWebAssembly
 @inject HelixApiClient Api
+@inject AuthStateService AuthState
+@inject NavigationManager Nav
 
 <PageTitle>Profile</PageTitle>
 
-<h1 class="helix-page-title">Profile</h1>
+<h1 class="cb-page-header__title">Profile</h1>
 
 @if (_profile is null)
 {
@@ -24,12 +26,16 @@ else
 @code {
     private UserProfileDto? _profile;
 
-    protected override async Task OnInitializedAsync() =>
-        _profile = await Api.GetProfileAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthState.EnsureLoadedAsync();
+        _profile = AuthState.Profile;
+    }
 
     private async Task LogoutAsync()
     {
         await Api.LogoutAsync();
-        _profile = null;
+        AuthState.Clear();
+        Nav.NavigateTo("/login", forceLoad: true);
     }
 }
