@@ -6,4 +6,5 @@
     <LangVersion>latest</LangVersion>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
+  <Import Project="LocalBuild.props" Condition="Exists('LocalBuild.props')" />
 </Project>

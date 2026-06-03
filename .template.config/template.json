@@ -43,7 +43,8 @@
         ".git/**",
         ".cursor/**",
         "**/*.plan.md",
-        "HelixCarbon.TemplatePack.csproj"
+        "HelixCarbon.TemplatePack.csproj",
+        "LocalBuild.props"
       ],
       "modifiers": [
         {

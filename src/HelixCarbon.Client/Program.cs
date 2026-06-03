@@ -2,7 +2,7 @@ using ApexCharts;
 using CarbonBlazor;
 using HelixCarbon.Client.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-#if (AuthAzure)
+#if AuthAzure
 using Microsoft.Authentication.WebAssembly.Msal;
 using Microsoft.Authentication.WebAssembly.Msal.Models;
 #endif
@@ -22,7 +22,7 @@ builder.Services.AddScoped(sp =>
     return new HttpClient(handler) { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) };
 });
 
-#if (AuthAzure)
+#if AuthAzure
 builder.Services.AddMsalAuthentication(options =>
 {
     builder.Configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
@@ -34,7 +34,7 @@ builder.Services.AddMsalAuthentication(options =>
 });
 #endif
 
-#if (AuthBFF || AuthAdvanced)
+#if AuthBFF || AuthAdvanced
 builder.Services.AddAuthorizationCore();
 #endif
 

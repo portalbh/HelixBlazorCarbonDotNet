@@ -28,7 +28,7 @@ public static class ApiEndpoints
             }
         }).AllowAnonymous();
 
-#if (AuthNone)
+#if AuthNone
         api.MapGet("/tenants", async (ITenantService tenants) =>
             Results.Ok(await tenants.ListAsync())).AllowAnonymous();
 
@@ -52,7 +52,7 @@ public static class ApiEndpoints
 
     private static void MapProductEndpoints(RouteGroupBuilder api)
     {
-#if (AuthNone)
+#if AuthNone
         var products = api.MapGroup("/products");
 #else
         var products = api.MapGroup("/products").RequireAuthorization();
@@ -79,9 +79,9 @@ public static class ApiEndpoints
 
     private static void MapAuthEndpoints(RouteGroupBuilder api)
     {
-#if (AuthNone)
+#if AuthNone
         // No cookie/JWT auth endpoints in None mode.
-#elif (AuthAzure)
+#elif AuthAzure
         // Azure mode uses MSAL on the client and JWT bearer on the API (configured in Program.cs).
 #else
         var auth = api.MapGroup("/auth");

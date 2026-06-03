@@ -1,10 +1,10 @@
 using HelixCarbon.Server.Data;
 using HelixCarbon.Server.Services;
-#if (AuthAzure)
+#if AuthAzure
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 #endif
-#if (AuthBFF || AuthAdvanced)
+#if AuthBFF || AuthAdvanced
 using Microsoft.AspNetCore.Authentication.Cookies;
 #endif
 
@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITenantService, TenantService>();
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<IDashboardService, DashboardService>();
-#if (AuthBFF || AuthAdvanced)
+#if AuthBFF || AuthAdvanced
         services.AddScoped<IAuthService, AuthService>();
 #endif
         return services;
@@ -27,13 +27,13 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddHelixCarbonAuth(this IServiceCollection services, IConfiguration configuration)
     {
-#if (AuthNone)
+#if AuthNone
         services.AddAuthorization();
-#elif (AuthAzure)
+#elif AuthAzure
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApi(configuration.GetSection("AzureAd"));
         services.AddAuthorization();
-#elif (AuthBFF || AuthAdvanced)
+#elif AuthBFF || AuthAdvanced
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
             {

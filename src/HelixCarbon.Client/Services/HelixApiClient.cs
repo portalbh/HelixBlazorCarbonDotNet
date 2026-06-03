@@ -36,7 +36,6 @@ public sealed class HelixApiClient(HttpClient http)
             : null;
     }
 
-#if (AuthBFF || AuthAdvanced)
     public async Task<bool> LoginAsync(LoginRequest request)
     {
         var response = await http.PostAsJsonAsync("api/auth/login", request);
@@ -53,5 +52,4 @@ public sealed class HelixApiClient(HttpClient http)
         await http.GetFromJsonAsync<UserProfileDto>("api/auth/profile");
 
     public async Task LogoutAsync() => await http.PostAsync("api/auth/logout", null);
-#endif
 }

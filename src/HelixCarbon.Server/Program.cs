@@ -4,11 +4,11 @@ using HelixCarbon.Server.Data;
 using HelixCarbon.Server.Endpoints;
 using HelixCarbon.Server.Extensions;
 using HelixCarbon.Server.Middleware;
-#if (AuthAzure)
+#if AuthAzure
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 #endif
-#if (AuthBFF || AuthAdvanced)
+#if AuthBFF || AuthAdvanced
 using Microsoft.AspNetCore.Authentication.Cookies;
 #endif
 
@@ -43,10 +43,10 @@ app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages:
 app.UseHttpsRedirection();
 app.UseAntiforgery();
 
-#if (AuthAzure)
+#if AuthAzure
 app.UseAuthentication();
 app.UseAuthorization();
-#elif (AuthBFF || AuthAdvanced)
+#elif AuthBFF || AuthAdvanced
 app.UseAuthentication();
 app.UseAuthorization();
 #endif
