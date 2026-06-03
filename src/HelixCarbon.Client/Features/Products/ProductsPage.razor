@@ -4,26 +4,40 @@
 
 <PageTitle>Products</PageTitle>
 
-<h1 class="helix-page-title">Products</h1>
+<header class="cb-page-header">
+    <div class="cb-page-header__body">
+        <h1 class="cb-page-header__title">Products</h1>
+        <p class="cb-page-header__description">Manage tenant-scoped products for the current workspace.</p>
+    </div>
+</header>
 
-<div class="helix-form" style="margin-bottom: 1.5rem;">
-    <CbTextInput Label="Name" @bind-Value="_newName" />
-    <CbTextInput Label="Description" @bind-Value="_newDescription" />
-    <CbNumberInput Label="Price" @bind-Value="_newPrice" />
-    <CbButton OnClick="CreateAsync">Add product</CbButton>
-</div>
+<section class="helix-section helix-panel">
+    <h2 class="helix-section-title">Add product</h2>
+    <div class="helix-form-grid">
+        <CbTextInput Label="Name" @bind-Value="_newName" Placeholder="Product name" />
+        <CbNumberInput Label="Price" @bind-Value="_newPrice" Placeholder="0.00" />
+        <div class="helix-form-grid__full">
+            <CbTextInput Label="Description" @bind-Value="_newDescription" Placeholder="Optional description" />
+        </div>
+    </div>
+    <div class="helix-form-actions">
+        <CbButton OnClick="CreateAsync">Add product</CbButton>
+    </div>
+</section>
 
-@if (_loading)
-{
-    <CbInlineLoading Description="Loading products..." />
-}
-else
-{
-    <CbDataTable TItem="ProductDto"
-                 Title="Tenant products"
-                 Items="_products"
-                 Columns="_columns" />
-}
+<section class="helix-section helix-data-table">
+    @if (_loading)
+    {
+        <CbInlineLoading Description="Loading products..." />
+    }
+    else
+    {
+        <CbDataTable TItem="ProductDto"
+                     Title="Tenant products"
+                     Items="_products"
+                     Columns="_columns" />
+    }
+</section>
 
 @code {
     private bool _loading = true;
@@ -38,8 +52,8 @@ else
     {
         _columns =
         [
-            new() { Header = "Name", Text = p => p.Name },
-            new() { Header = "Price", Text = p => p.Price.ToString("C") },
+            new() { Header = "Name", Text = p => p.Name, Width = "16rem" },
+            new() { Header = "Price", Text = p => p.Price.ToString("C"), Width = "8rem" },
             new() { Header = "Description", Text = p => p.Description ?? "-" }
         ];
     }

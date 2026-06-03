@@ -102,5 +102,7 @@ public enum CbIconName
     DocumentBlank,
     Pharmacy,
     Hospital,
-    Report
+    Report,
+    Light,
+    Asleep
 }

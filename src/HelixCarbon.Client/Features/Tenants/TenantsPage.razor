@@ -4,7 +4,12 @@
 
 <PageTitle>Tenants</PageTitle>
 
-<h1 class="helix-page-title">Tenant administration</h1>
+<header class="cb-page-header">
+    <div class="cb-page-header__body">
+        <h1 class="cb-page-header__title">Tenant administration</h1>
+        <p class="cb-page-header__description">View workspaces provisioned in the shared database.</p>
+    </div>
+</header>
 
 @if (_loading)
 {
@@ -16,7 +21,8 @@ else if (_tenants.Count == 0)
 }
 else
 {
-    <CbStructuredList>
+    <section class="helix-section helix-panel">
+        <CbStructuredList>
         @foreach (var tenant in _tenants)
         {
             <CbStructuredListRow>
@@ -25,7 +31,8 @@ else
                 <CbStructuredListCell>@tenant.Plan</CbStructuredListCell>
             </CbStructuredListRow>
         }
-    </CbStructuredList>
+        </CbStructuredList>
+    </section>
 }
 
 @code {

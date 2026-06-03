@@ -7,7 +7,7 @@
 <h1 class="helix-page-title">Register tenant user</h1>
 <p>Requires an authenticated tenant admin (BFF / Advanced auth).</p>
 
-<div class="helix-form">
+<div class="helix-form helix-form--narrow">
     <CbTextInput Label="Email" @bind-Value="_email" />
     <CbTextInput Label="Password" Type="password" @bind-Value="_password" />
     <CbButton OnClick="RegisterAsync">Register</CbButton>
