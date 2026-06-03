@@ -19,7 +19,7 @@
   <ItemGroup>
     <Compile Remove="**\*" />
     <Content Include="**\*"
-             Exclude="artifacts/**;build/**;build\**;_testgen/**;**\_ref\**;**\_carbon_tmp\**;**\bin\**;**\obj\**;**\.vs\**;**\*.nupkg;HelixCarbon.TemplatePack.csproj" />
+             Exclude="artifacts/**;build/**;build\**;_testgen/**;_template-stage/**;**\_ref\**;**\_carbon_tmp\**;**\bin\**;**\obj\**;**\.vs\**;**\*.nupkg;HelixCarbon.TemplatePack.csproj" />
   </ItemGroup>
 
 </Project>
