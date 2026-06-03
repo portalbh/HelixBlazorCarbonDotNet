@@ -1,0 +1,21 @@
+<CascadingValue Name="TreeRootId" Value="TreeRootId">
+    <ul id="@TreeRootId" class="@ClassName" role="tree" aria-label="@Label" @attributes="AdditionalAttributes">
+        @foreach (var node in Nodes)
+        {
+            <CbTreeViewNode Node="@node" />
+        }
+    </ul>
+</CascadingValue>
+
+@code {
+    private readonly string _id = $"cb-tree-{Guid.NewGuid():N}";
+
+    [Parameter] public string Label { get; set; } = "Tree view";
+    [Parameter] public IReadOnlyList<CbTreeNode> Nodes { get; set; } = [];
+    [Parameter] public string? Id { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string TreeRootId => Id ?? _id;
+    private string ClassName => new CssBuilder("cb-tree").Add(Class).ToString();
+}

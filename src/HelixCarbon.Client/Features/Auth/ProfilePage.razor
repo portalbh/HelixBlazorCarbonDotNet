@@ -1,0 +1,35 @@
+@page "/profile"
+@rendermode InteractiveWebAssembly
+@inject HelixApiClient Api
+
+<PageTitle>Profile</PageTitle>
+
+<h1 class="helix-page-title">Profile</h1>
+
+@if (_profile is null)
+{
+    <CbInlineLoading Description="Loading profile..." />
+}
+else
+{
+    <CbTile>
+        <p><strong>Email:</strong> @_profile.Email</p>
+        <p><strong>Role:</strong> @_profile.Role</p>
+        <p><strong>Tenant:</strong> @_profile.TenantName (@_profile.TenantSlug)</p>
+        <p><strong>Plan:</strong> @_profile.Plan</p>
+    </CbTile>
+    <CbButton OnClick="LogoutAsync">Logout</CbButton>
+}
+
+@code {
+    private UserProfileDto? _profile;
+
+    protected override async Task OnInitializedAsync() =>
+        _profile = await Api.GetProfileAsync();
+
+    private async Task LogoutAsync()
+    {
+        await Api.LogoutAsync();
+        _profile = null;
+    }
+}

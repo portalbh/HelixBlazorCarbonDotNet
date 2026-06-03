@@ -1,0 +1,85 @@
+@implements IDisposable
+@inject NavigationManager Navigation
+
+<NavLink class="cb-side-nav__link" href="@Href" Match="@Match" @attributes="MergedAttributes">
+    @if (IconName.HasValue)
+    {
+        <CbIcon Name="@IconName.Value" Size="16" Class="cb-side-nav__icon" />
+    }
+    else if (!string.IsNullOrWhiteSpace(Icon))
+    {
+        <span class="cb-side-nav__icon" aria-hidden="true">@Icon</span>
+    }
+    <span class="cb-side-nav__label">@ChildContent</span>
+</NavLink>
+
+@code {
+    [Parameter] public string Href { get; set; } = "#";
+    [Parameter] public CbIconName? IconName { get; set; }
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private IReadOnlyDictionary<string, object>? MergedAttributes
+    {
+        get
+        {
+            if (!IsActive || AdditionalAttributes?.ContainsKey("aria-current") == true)
+            {
+                return AdditionalAttributes;
+            }
+
+            var attributes = AdditionalAttributes is null
+                ? new Dictionary<string, object>(StringComparer.Ordinal)
+                : new Dictionary<string, object>(AdditionalAttributes, StringComparer.Ordinal);
+            attributes["aria-current"] = "page";
+            return attributes;
+        }
+    }
+
+    private bool IsActive
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(Href) || Href == "#")
+            {
+                return false;
+            }
+
+            var current = NormalizePath(Navigation.ToBaseRelativePath(Navigation.Uri));
+            var target = NormalizePath(Navigation.ToBaseRelativePath(Navigation.ToAbsoluteUri(Href).ToString()));
+
+            return Match == NavLinkMatch.All
+                ? string.Equals(current, target, StringComparison.OrdinalIgnoreCase)
+                : string.Equals(current, target, StringComparison.OrdinalIgnoreCase)
+                    || current.StartsWith($"{target}/", StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private static string NormalizePath(string path)
+    {
+        var queryIndex = path.IndexOfAny(['?', '#']);
+        if (queryIndex >= 0)
+        {
+            path = path[..queryIndex];
+        }
+
+        return path.Trim('/').ToLowerInvariant();
+    }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs args)
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+}

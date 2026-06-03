@@ -1,0 +1,18 @@
+<span class="@ClassName" @attributes="AdditionalAttributes">
+    <span class="cb-tag__content">@ChildContent</span>
+    @if (Dismissible)
+    {
+        <button class="cb-tag__close" type="button" aria-label="@DismissLabel" @onclick="OnDismiss">&times;</button>
+    }
+</span>
+
+@code {
+    [Parameter] public CbTagKind Kind { get; set; } = CbTagKind.Gray;
+    [Parameter] public bool Dismissible { get; set; }
+    [Parameter] public string DismissLabel { get; set; } = "Remove tag";
+    [Parameter] public EventCallback OnDismiss { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private string ClassName => new CssBuilder("cb-tag").Add($"cb-tag--{Kind.ToString().ToLowerInvariant()}").Add(Class).ToString();
+}

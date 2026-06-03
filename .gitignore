@@ -1,0 +1,13 @@
+bin/
+obj/
+artifacts/
+*.user
+*.suo
+.vs/
+node_modules/
+dist/
+*.db
+*.db-shm
+*.db-wal
+_carbon_tmp/
+_ref/

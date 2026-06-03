@@ -1,0 +1,14 @@
+<div class="@ClassName" data-layer="@((int)Level)" @attributes="AdditionalAttributes">
+    <CascadingValue Value="Level">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@code {
+    [Parameter] public CbLayerLevel Level { get; set; } = CbLayerLevel.One;
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string ClassName => string.Join(" ", new[] { "cb-layer", $"cb-layer--{(int)Level}", Class }.Where(value => !string.IsNullOrWhiteSpace(value)));
+}

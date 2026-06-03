@@ -1,0 +1,28 @@
+<aside class="@ClassName" aria-label="@Label" @attributes="AdditionalAttributes">
+    <nav class="cb-side-nav__nav">
+        @ChildContent
+    </nav>
+</aside>
+@if (Open && ShowOverlay)
+{
+    <button class="cb-side-nav__overlay" type="button" aria-label="Close navigation" @onclick="Close"></button>
+}
+
+@code {
+    [Parameter] public string Label { get; set; } = "Side navigation";
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public bool Collapsed { get; set; }
+    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
+    [Parameter] public bool ShowOverlay { get; set; } = true;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string ClassName => new CssBuilder("cb-side-nav").Add("cb-side-nav--open", Open).Add("cb-side-nav--collapsed", Collapsed).Add(Class).ToString();
+
+    private async Task Close()
+    {
+        Open = false;
+        await OpenChanged.InvokeAsync(false);
+    }
+}

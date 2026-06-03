@@ -1,0 +1,56 @@
+@inherits LayoutComponentBase
+@inject CarbonBlazorJsModule JsModule
+@inject TenantHeaderHandler TenantHeader
+
+<CbThemeProvider Theme="CbTheme.G100">
+    <CbHeader ProductName="HelixCarbon" Prefix="SaaS" SideNavOpen="_mobileNavOpen" SideNavOpenChanged="OnMobileNavChanged" MenuLabel="Menu" MenuControls="helix-side-nav" OnMenuToggle="ToggleNavAsync">
+        <NavContent>
+            <CbHeaderNavLink Href="/" Match="NavLinkMatch.All">Home</CbHeaderNavLink>
+            <CbHeaderNavLink Href="/dashboard">Dashboard</CbHeaderNavLink>
+            <CbHeaderNavLink Href="/products">Products</CbHeaderNavLink>
+            <CbHeaderNavLink Href="/tenants">Tenants</CbHeaderNavLink>
+            <CbHeaderNavLink Href="/profile">Profile</CbHeaderNavLink>
+        </NavContent>
+        <Actions>
+            <span class="helix-tenant-chip">@TenantHeader.TenantSlug</span>
+        </Actions>
+    </CbHeader>
+    <CbSideNav id="helix-side-nav" Open="_mobileNavOpen" OpenChanged="OnMobileNavChanged" Collapsed="_desktopCollapsed">
+        <CbSideNavLink Href="/" Match="NavLinkMatch.All" IconName="CbIconName.Home">Home</CbSideNavLink>
+        <CbSideNavLink Href="/dashboard" IconName="CbIconName.Dashboard">Dashboard</CbSideNavLink>
+        <CbSideNavLink Href="/products" IconName="CbIconName.DocumentBlank">Products</CbSideNavLink>
+        <CbSideNavLink Href="/tenants" IconName="CbIconName.User">Tenants</CbSideNavLink>
+        <CbSideNavLink Href="/onboarding" IconName="CbIconName.Add">Onboarding</CbSideNavLink>
+        <CbSideNavLink Href="/login" IconName="CbIconName.User">Login</CbSideNavLink>
+        <CbSideNavLink Href="/register" IconName="CbIconName.Add">Register</CbSideNavLink>
+    </CbSideNav>
+    <CbContent>
+        <div class="helix-dev-banner">Tenant header: X-Tenant = @TenantHeader.TenantSlug (subdomain also supported)</div>
+        @Body
+    </CbContent>
+</CbThemeProvider>
+
+@code {
+    private bool _mobileNavOpen;
+    private bool _desktopCollapsed;
+
+    private Task OnMobileNavChanged(bool open)
+    {
+        _mobileNavOpen = open;
+        return Task.CompletedTask;
+    }
+
+    private async Task ToggleNavAsync()
+    {
+        var module = await JsModule.GetModuleAsync();
+        var isDesktop = await module.InvokeAsync<bool>("matchesMedia", "(min-width: 1056px)");
+        if (isDesktop)
+        {
+            _desktopCollapsed = !_desktopCollapsed;
+        }
+        else
+        {
+            _mobileNavOpen = !_mobileNavOpen;
+        }
+    }
+}

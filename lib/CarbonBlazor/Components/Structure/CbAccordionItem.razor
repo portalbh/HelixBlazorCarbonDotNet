@@ -1,0 +1,29 @@
+<section class="@ClassName">
+    <h3 class="cb-accordion__heading">
+        <button class="cb-accordion__trigger" type="button" aria-expanded="@AriaExpanded" aria-controls="@PanelId" disabled="@Disabled" @onclick="Toggle">
+            <span aria-hidden="true">@(Open ? "−" : "+")</span>
+            <span>@Title</span>
+        </button>
+    </h3>
+    @if (Open)
+    {
+        <div id="@PanelId" class="cb-accordion__panel">@ChildContent</div>
+    }
+</section>
+
+@code {
+    private readonly string PanelId = $"cb-accordion-panel-{Guid.NewGuid():N}";
+    [Parameter] public string Title { get; set; } = "Accordion item";
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    private string ClassName => new CssBuilder("cb-accordion__item").Add(Class).ToString();
+    private string AriaExpanded => Open ? "true" : "false";
+    private async Task Toggle()
+    {
+        Open = !Open;
+        await OpenChanged.InvokeAsync(Open);
+    }
+}

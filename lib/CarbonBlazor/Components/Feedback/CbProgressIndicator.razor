@@ -1,0 +1,11 @@
+<ol class="@ClassName" aria-label="@Label" @attributes="AdditionalAttributes">
+    @ChildContent
+</ol>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Progress";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private string ClassName => new CssBuilder("cb-progress-indicator").Add(Class).ToString();
+}

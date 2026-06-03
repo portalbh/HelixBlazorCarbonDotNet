@@ -1,0 +1,14 @@
+<nav class="@ClassName" aria-label="@Label" @attributes="AdditionalAttributes">
+    <ol>
+        @ChildContent
+    </ol>
+</nav>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Breadcrumb";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string ClassName => new CssBuilder("cb-breadcrumb").Add(Class).ToString();
+}

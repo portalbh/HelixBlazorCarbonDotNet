@@ -1,0 +1,40 @@
+<div class="@ClassName">
+    <label class="cb-label" for="@InputId">@Label</label>
+    <input id="@InputId" class="cb-input" type="@Type" value="@Value" placeholder="@Placeholder" disabled="@Disabled" readonly="@ReadOnly" aria-invalid="@Invalid" aria-describedby="@DescribedBy" @oninput="OnInput" @attributes="AdditionalAttributes" />
+    @if (!string.IsNullOrWhiteSpace(HelperText))
+    {
+        <div id="@HelperId" class="cb-helper">@HelperText</div>
+    }
+    @if (Invalid && !string.IsNullOrWhiteSpace(InvalidText))
+    {
+        <div id="@InvalidId" class="cb-requirement">@InvalidText</div>
+    }
+</div>
+
+@code {
+    private readonly string _id = $"cb-input-{Guid.NewGuid():N}";
+    [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
+    [Parameter] public string Type { get; set; } = "text";
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? HelperText { get; set; }
+    [Parameter] public string? InvalidText { get; set; }
+    [Parameter] public bool Invalid { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool ReadOnly { get; set; }
+    [Parameter] public string? Id { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string InputId => Id ?? _id;
+    private string HelperId => $"{InputId}-helper";
+    private string InvalidId => $"{InputId}-invalid";
+    private string? DescribedBy => string.Join(" ", new[] { HelperText is null ? null : HelperId, Invalid ? InvalidId : null }.Where(value => value is not null));
+    private string ClassName => new CssBuilder("cb-form-item").Add("cb-form-item--invalid", Invalid).Add(Class).ToString();
+    private async Task OnInput(ChangeEventArgs args)
+    {
+        Value = args.Value?.ToString();
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

@@ -1,0 +1,10 @@
+<CbPopover Class="@Class">
+    <Trigger><span aria-hidden="true">?</span><span class="cb-sr-only">@Label</span></Trigger>
+    <ChildContent>@ChildContent</ChildContent>
+</CbPopover>
+
+@code {
+    [Parameter] public string Label { get; set; } = "More information";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+}

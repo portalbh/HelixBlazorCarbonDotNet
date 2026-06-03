@@ -1,0 +1,104 @@
+<div class="@ClassName" @attributes="AdditionalAttributes">
+    <div class="cb-tabs__list" role="tablist" aria-label="@Label" @onkeydown="OnKeyDown">
+        @for (var i = 0; i < Items.Count; i++)
+        {
+            var index = i;
+            var item = Items[index];
+            <button id="@TabId(item)" class="cb-tab" type="button" role="tab" aria-selected="@AriaSelected(index)" aria-controls="@PanelId(item)" disabled="@item.Disabled" tabindex="@(SelectedIndex == index ? 0 : -1)" data-roving-item @onclick="() => Select(index)">
+                @item.Label
+            </button>
+        }
+    </div>
+    @if (Items.Count > 0)
+    {
+        var selected = Items[Math.Clamp(SelectedIndex, 0, Items.Count - 1)];
+        <section id="@PanelId(selected)" class="cb-tabs__panel" role="tabpanel" aria-labelledby="@TabId(selected)" tabindex="0">
+            @selected.Content
+        </section>
+    }
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Tabs";
+    [Parameter] public IReadOnlyList<CbTabItem> Items { get; set; } = [];
+    [Parameter] public int SelectedIndex { get; set; }
+    [Parameter] public EventCallback<int> SelectedIndexChanged { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private string ClassName => new CssBuilder("cb-tabs").Add(Class).ToString();
+    private string TabId(CbTabItem item) => $"cb-tab-{item.Id}";
+    private string PanelId(CbTabItem item) => $"cb-tab-panel-{item.Id}";
+    private string AriaSelected(int index) => SelectedIndex == index ? "true" : "false";
+
+    private async Task Select(int index)
+    {
+        if (index < 0 || index >= Items.Count || Items[index].Disabled)
+        {
+            return;
+        }
+
+        SelectedIndex = index;
+        await SelectedIndexChanged.InvokeAsync(index);
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs args)
+    {
+        if (Items.Count == 0)
+        {
+            return;
+        }
+
+        var next = SelectedIndex;
+        if (args.Key is "ArrowRight" or "ArrowDown")
+        {
+            next = FindNext(1);
+        }
+        else if (args.Key is "ArrowLeft" or "ArrowUp")
+        {
+            next = FindNext(-1);
+        }
+        else if (args.Key == "Home")
+        {
+            next = FindFirst(1);
+        }
+        else if (args.Key == "End")
+        {
+            next = FindFirst(-1);
+        }
+        else
+        {
+            return;
+        }
+
+        await Select(next);
+    }
+
+    private int FindFirst(int direction)
+    {
+        var start = direction > 0 ? 0 : Items.Count - 1;
+        for (var i = start; i >= 0 && i < Items.Count; i += direction)
+        {
+            if (!Items[i].Disabled)
+            {
+                return i;
+            }
+        }
+
+        return SelectedIndex;
+    }
+
+    private int FindNext(int direction)
+    {
+        var index = SelectedIndex;
+        for (var count = 0; count < Items.Count; count++)
+        {
+            index = (index + direction + Items.Count) % Items.Count;
+            if (!Items[index].Disabled)
+            {
+                return index;
+            }
+        }
+
+        return SelectedIndex;
+    }
+}

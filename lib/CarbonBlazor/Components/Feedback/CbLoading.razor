@@ -1,0 +1,15 @@
+<div class="@ClassName" role="status" aria-label="@Label" @attributes="AdditionalAttributes">
+    <span class="cb-spinner cb-spinner--large" aria-hidden="true"></span>
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <span class="cb-sr-only">@Label</span>
+    }
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Loading";
+    [Parameter] public bool Overlay { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private string ClassName => new CssBuilder("cb-loading").Add("cb-loading--overlay", Overlay).Add(Class).ToString();
+}

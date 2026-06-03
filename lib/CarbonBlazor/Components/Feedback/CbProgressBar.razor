@@ -1,0 +1,20 @@
+<div class="@ClassName" @attributes="AdditionalAttributes">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <div class="cb-progress-bar__label">@Label</div>
+    }
+    <div class="cb-progress-bar__track" role="progressbar" aria-valuemin="@Min" aria-valuemax="@Max" aria-valuenow="@Value">
+        <div class="cb-progress-bar__fill" style="width: @Percent%"></div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public double Value { get; set; }
+    [Parameter] public double Min { get; set; }
+    [Parameter] public double Max { get; set; } = 100;
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private double Percent => Math.Clamp((Value - Min) / (Max - Min) * 100, 0, 100);
+    private string ClassName => new CssBuilder("cb-progress-bar").Add(Class).ToString();
+}

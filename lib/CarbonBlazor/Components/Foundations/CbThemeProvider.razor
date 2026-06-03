@@ -1,0 +1,23 @@
+<div class="@ClassName" data-theme="@ThemeName" @attributes="AdditionalAttributes">
+    <CascadingValue Value="Theme">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@code {
+    [Parameter] public CbTheme Theme { get; set; } = CbTheme.White;
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string ThemeName => Theme switch
+    {
+        CbTheme.G10 => "g10",
+        CbTheme.G90 => "g90",
+        CbTheme.G100 => "g100",
+        CbTheme.Teal => "teal",
+        _ => "white"
+    };
+
+    private string ClassName => string.Join(" ", new[] { "cb-theme", Class }.Where(value => !string.IsNullOrWhiteSpace(value)));
+}

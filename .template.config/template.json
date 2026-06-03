@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Portal.bh",
+  "classifications": [ "Web", "Blazor", "SaaS", "Multi-Tenant" ],
+  "identity": "PortalBH.HelixCarbon.SaaS",
+  "name": "myt3-carbon-saas",
+  "shortName": "myt3-carbon-saas",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "HelixCarbon",
+  "preferNameDirectory": true,
+  "symbols": {
+    "auth": {
+      "type": "parameter",
+      "description": "Authentication mode: None, Azure (Entra/MSAL), BFF (cookies), or Advanced (Identity-style cookies + Dapper users).",
+      "datatype": "choice",
+      "defaultValue": "None",
+      "choices": [
+        { "choice": "None", "description": "No authentication" },
+        { "choice": "Azure", "description": "Microsoft Entra ID + JWT API + MSAL client" },
+        { "choice": "BFF", "description": "Backend-for-Frontend cookie authentication" },
+        { "choice": "Advanced", "description": "Cookie auth with multi-tenant user store (Dapper)" }
+      ]
+    },
+    "AuthNone": { "type": "computed", "value": "(auth == None)" },
+    "AuthAzure": { "type": "computed", "value": "(auth == Azure)" },
+    "AuthBFF": { "type": "computed", "value": "(auth == BFF)" },
+    "AuthAdvanced": { "type": "computed", "value": "(auth == Advanced)" }
+  },
+  "sources": [
+    {
+      "source": "./",
+      "target": "./",
+      "exclude": [
+        "artifacts/**",
+        "build/**",
+        "_ref/**",
+        "_carbon_tmp/**",
+        "**/bin/**",
+        "**/obj/**",
+        ".git/**",
+        ".cursor/**",
+        "**/*.plan.md",
+        "HelixCarbon.TemplatePack.csproj"
+      ],
+      "modifiers": [
+        {
+          "condition": "(auth != Azure)",
+          "exclude": [ "**/Features/Auth/AzureLoginPage.razor" ]
+        },
+        {
+          "condition": "(auth == Azure)",
+          "exclude": [
+            "**/Features/Auth/LoginPage.razor",
+            "**/Features/Auth/RegisterPage.razor",
+            "**/Features/Auth/ProfilePage.razor"
+          ]
+        },
+        {
+          "condition": "(auth == None)",
+          "exclude": [
+            "**/Features/Auth/LoginPage.razor",
+            "**/Features/Auth/RegisterPage.razor",
+            "**/Features/Auth/ProfilePage.razor",
+            "**/Features/Auth/AzureLoginPage.razor"
+          ]
+        }
+      ]
+    }
+  ]
+}

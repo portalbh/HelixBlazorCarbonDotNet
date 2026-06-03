@@ -1,0 +1,10 @@
+<div class="@ClassName" role="table" @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private string ClassName => new CssBuilder("cb-structured-list").Add(Class).ToString();
+}

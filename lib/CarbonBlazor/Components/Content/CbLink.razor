@@ -1,0 +1,11 @@
+<a class="@ClassName" href="@Href" target="@Target" rel="@Rel" @attributes="AdditionalAttributes">@ChildContent</a>
+
+@code {
+    [Parameter] public string Href { get; set; } = "#";
+    [Parameter] public string? Target { get; set; }
+    [Parameter] public string? Rel { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private string ClassName => new CssBuilder("cb-link").Add(Class).ToString();
+}

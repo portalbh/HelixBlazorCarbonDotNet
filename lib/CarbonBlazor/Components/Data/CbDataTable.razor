@@ -1,0 +1,120 @@
+@typeparam TItem
+
+<div class="@ClassName" @attributes="AdditionalAttributes">
+    @if (!string.IsNullOrWhiteSpace(Title))
+    {
+        <div class="cb-data-table__header">
+            <h3>@Title</h3>
+            @Toolbar
+        </div>
+    }
+    <table>
+        <thead>
+            <tr>
+                @if (Selectable)
+                {
+                    <th scope="col"><span class="cb-sr-only">Select</span></th>
+                }
+                @for (var i = 0; i < Columns.Count; i++)
+                {
+                    var index = i;
+                    var column = Columns[index];
+                    <th scope="col" style="width:@column.Width">
+                        @if (column.SortKey is not null)
+                        {
+                            <button class="cb-data-table__sort" type="button" aria-sort="@SortState(index)" @onclick="() => Sort(index)">@column.Header</button>
+                        }
+                        else
+                        {
+                            @column.Header
+                        }
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in SortedItems.Select((item, index) => new { item, index }))
+            {
+                <tr>
+                    @if (Selectable)
+                    {
+                        <td><input type="checkbox" checked="@SelectedRows.Contains(row.index)" aria-label="Select row" @onchange="args => ToggleSelection(row.index, args)" /></td>
+                    }
+                    @foreach (var column in Columns)
+                    {
+                        <td>@(column.Template?.Invoke(row.item) ?? (RenderFragment)(builder => builder.AddContent(0, column.Text?.Invoke(row.item))))</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public IReadOnlyList<TItem> Items { get; set; } = [];
+    [Parameter] public IReadOnlyList<CbDataTableColumn<TItem>> Columns { get; set; } = [];
+    [Parameter] public bool Selectable { get; set; }
+    [Parameter] public EventCallback<IReadOnlyList<TItem>> SelectedItemsChanged { get; set; }
+    [Parameter] public RenderFragment? Toolbar { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private int? SortColumn { get; set; }
+    private bool SortDescending { get; set; }
+    private HashSet<int> SelectedRows { get; } = [];
+    private string ClassName => new CssBuilder("cb-data-table").Add(Class).ToString();
+
+    private IEnumerable<TItem> SortedItems
+    {
+        get
+        {
+            if (SortColumn is null || Columns[SortColumn.Value].SortKey is null)
+            {
+                return Items;
+            }
+
+            var key = Columns[SortColumn.Value].SortKey!;
+            return SortDescending
+                ? Items.OrderByDescending(item => key(item), Comparer<object?>.Create(CompareValues))
+                : Items.OrderBy(item => key(item), Comparer<object?>.Create(CompareValues));
+        }
+    }
+
+    private static int CompareValues(object? left, object? right)
+    {
+        if (left is null && right is null) return 0;
+        if (left is null) return -1;
+        if (right is null) return 1;
+        return left is IComparable comparable ? comparable.CompareTo(right) : string.Compare(left.ToString(), right.ToString(), StringComparison.Ordinal);
+    }
+
+    private void Sort(int index)
+    {
+        if (SortColumn == index)
+        {
+            SortDescending = !SortDescending;
+        }
+        else
+        {
+            SortColumn = index;
+            SortDescending = false;
+        }
+    }
+
+    private string SortState(int index) => SortColumn == index ? (SortDescending ? "descending" : "ascending") : "none";
+
+    private async Task ToggleSelection(int index, ChangeEventArgs args)
+    {
+        if (args.Value is bool selected && selected)
+        {
+            SelectedRows.Add(index);
+        }
+        else
+        {
+            SelectedRows.Remove(index);
+        }
+
+        await SelectedItemsChanged.InvokeAsync(Items.Where((_, index) => SelectedRows.Contains(index)).ToList());
+    }
+}

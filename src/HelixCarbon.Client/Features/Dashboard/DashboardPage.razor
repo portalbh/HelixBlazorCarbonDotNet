@@ -1,0 +1,65 @@
+@page "/dashboard"
+@rendermode InteractiveWebAssembly
+@inject HelixApiClient Api
+
+<PageTitle>Dashboard</PageTitle>
+
+<h1 class="helix-page-title">Tenant dashboard</h1>
+
+@if (_loading)
+{
+    <CbInlineLoading Description="Loading metrics..." />
+}
+else if (_metrics is null)
+{
+    <CbNotification Kind="CbNotificationKind.Error" Title="Unable to load metrics" Subtitle="@_error" />
+}
+else
+{
+    <div class="helix-chart">
+        <ApexChart TItem="ChartPoint" Title="Revenue by period" Height="320">
+            <ApexPointSeries TItem="ChartPoint"
+                             Items="_chartPoints"
+                             Name="Revenue"
+                             SeriesType="SeriesType.Bar"
+                             XValue="e => e.Label"
+                             YValue="e => e.Value" />
+        </ApexChart>
+    </div>
+    <CbTile>
+        <p>Products in tenant: <strong>@(_metrics.ProductCounts.LastOrDefault())</strong></p>
+    </CbTile>
+}
+
+@code {
+    private bool _loading = true;
+    private string? _error;
+    private DashboardMetricsDto? _metrics;
+    private List<ChartPoint> _chartPoints = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _metrics = await Api.GetDashboardMetricsAsync();
+            if (_metrics is not null)
+            {
+                _chartPoints = _metrics.Labels
+                    .Select((label, i) => new ChartPoint(
+                        label,
+                        _metrics.Revenue.ElementAtOrDefault(i)))
+                    .ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private sealed record ChartPoint(string Label, decimal Value);
+}

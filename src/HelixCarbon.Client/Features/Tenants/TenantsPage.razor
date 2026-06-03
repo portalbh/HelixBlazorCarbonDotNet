@@ -1,0 +1,40 @@
+@page "/tenants"
+@rendermode InteractiveWebAssembly
+@inject HelixApiClient Api
+
+<PageTitle>Tenants</PageTitle>
+
+<h1 class="helix-page-title">Tenant administration</h1>
+
+@if (_loading)
+{
+    <CbInlineLoading Description="Loading tenants..." />
+}
+else if (_tenants.Count == 0)
+{
+    <CbNotification Kind="CbNotificationKind.Info" Title="No tenants" Subtitle="Create one via onboarding." />
+}
+else
+{
+    <CbStructuredList>
+        @foreach (var tenant in _tenants)
+        {
+            <CbStructuredListRow>
+                <CbStructuredListCell>@tenant.Name</CbStructuredListCell>
+                <CbStructuredListCell><code>@tenant.Slug</code></CbStructuredListCell>
+                <CbStructuredListCell>@tenant.Plan</CbStructuredListCell>
+            </CbStructuredListRow>
+        }
+    </CbStructuredList>
+}
+
+@code {
+    private bool _loading = true;
+    private List<TenantDto> _tenants = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _tenants = (await Api.GetTenantsAsync() ?? []).ToList();
+        _loading = false;
+    }
+}

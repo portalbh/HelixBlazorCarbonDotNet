@@ -1,0 +1,21 @@
+<CbSelect Label="@Label" Value="@Value" ValueChanged="@ValueChanged" HelperText="@HelperText" Disabled="@Disabled" Invalid="@Invalid" Class="@ClassName">
+    @foreach (var item in Items)
+    {
+        <option value="@item">@item</option>
+    }
+    @ChildContent
+</CbSelect>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Dropdown";
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+    [Parameter] public IEnumerable<string> Items { get; set; } = [];
+    [Parameter] public string? HelperText { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool Invalid { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string ClassName => new CssBuilder("cb-dropdown").Add("cb-dropdown--invalid", Invalid).Add(Class).ToString();
+}

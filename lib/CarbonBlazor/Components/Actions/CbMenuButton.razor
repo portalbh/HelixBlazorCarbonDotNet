@@ -1,0 +1,78 @@
+@implements IAsyncDisposable
+@inject IJSRuntime Js
+
+<div id="@MenuId" class="@ClassName" @attributes="AdditionalAttributes">
+    <CbButton Variant="@Variant" Disabled="@Disabled" OnClick="Toggle" aria-haspopup="menu" aria-expanded="@Open">
+        @Label
+    </CbButton>
+    @if (Open)
+    {
+        <div class="cb-menu" role="menu" @onkeydown="OnKeyDown">
+            @ChildContent
+        </div>
+    }
+</div>
+
+@code {
+    private readonly string _id = $"cb-menu-button-{Guid.NewGuid():N}";
+    private DotNetObjectReference<CbMenuButton>? _dotNetRef;
+    private IJSObjectReference? _module;
+    private bool _listeningForOutsideClick;
+
+    [Parameter] public string Label { get; set; } = "Open menu";
+    [Parameter] public CbButtonVariant Variant { get; set; } = CbButtonVariant.Primary;
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool Open { get; set; }
+    private string MenuId => _id;
+    private string ClassName => new CssBuilder("cb-menu-button").Add(Class).ToString();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Open && !_listeningForOutsideClick)
+        {
+            _dotNetRef ??= DotNetObjectReference.Create(this);
+            _module ??= await Js.InvokeAsync<IJSObjectReference>("import", "./_content/CarbonBlazor/carbon-blazor.js");
+            await _module.InvokeVoidAsync("clickOutside", MenuId, _dotNetRef, nameof(CloseFromOutside));
+            _listeningForOutsideClick = true;
+        }
+    }
+
+    private void Toggle()
+    {
+        Open = !Open;
+        if (!Open)
+        {
+            _listeningForOutsideClick = false;
+        }
+    }
+
+    private void OnKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Escape")
+        {
+            Open = false;
+            _listeningForOutsideClick = false;
+        }
+    }
+
+    [JSInvokable]
+    public void CloseFromOutside()
+    {
+        Open = false;
+        _listeningForOutsideClick = false;
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _dotNetRef?.Dispose();
+        if (_module is not null)
+        {
+            await _module.DisposeAsync();
+        }
+    }
+}

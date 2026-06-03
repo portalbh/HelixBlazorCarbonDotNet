@@ -1,0 +1,18 @@
+<span class="@ClassName" @attributes="AdditionalAttributes">
+    <button class="cb-popover__trigger" type="button" aria-expanded="@Open" aria-describedby="@PopoverId" @onclick="Toggle">@Trigger</button>
+    @if (Open)
+    {
+        <span id="@PopoverId" class="cb-popover__content" role="dialog">@ChildContent</span>
+    }
+</span>
+
+@code {
+    private readonly string PopoverId = $"cb-popover-{Guid.NewGuid():N}";
+    [Parameter] public RenderFragment? Trigger { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private bool Open { get; set; }
+    private string ClassName => new CssBuilder("cb-popover").Add(Class).ToString();
+    private void Toggle() => Open = !Open;
+}

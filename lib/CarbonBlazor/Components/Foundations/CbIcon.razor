@@ -1,0 +1,108 @@
+<svg class="@ClassName"
+     xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 16 16"
+     width="@Size"
+     height="@Size"
+     aria-hidden="@(string.IsNullOrWhiteSpace(Label) ? "true" : null)"
+     aria-label="@(string.IsNullOrWhiteSpace(Label) ? null : Label)"
+     role="@(string.IsNullOrWhiteSpace(Label) ? null : "img")"
+     fill="currentColor"
+     @attributes="AdditionalAttributes">
+    @((MarkupString)GetPath())
+</svg>
+
+@code {
+    [Parameter] public CbIconName Name { get; set; }
+    [Parameter] public int Size { get; set; } = 16;
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string ClassName => new CssBuilder("cb-icon").Add(Class).ToString();
+
+    private string GetPath() => Name switch
+    {
+        CbIconName.Close =>
+            "<path d=\"M12 4.7L11.3 4 8 7.3 4.7 4 4 4.7 7.3 8 4 11.3 4.7 12 8 8.7 11.3 12 12 11.3 8.7 8z\"/>",
+
+        CbIconName.Menu =>
+            "<rect x=\"2\" y=\"3\" width=\"12\" height=\"1\"/><rect x=\"2\" y=\"7\" width=\"12\" height=\"1\"/><rect x=\"2\" y=\"11\" width=\"12\" height=\"1\"/>",
+
+        CbIconName.Settings =>
+            "<path d=\"M13.5 7.4h-1.3c-.1-.5-.4-1-.7-1.4l.9-.9-1.5-1.5-.9.9c-.4-.3-.9-.5-1.4-.7V2.5h-2v1.3c-.5.1-1 .4-1.4.7l-.9-.9-1.5 1.5.9.9c-.3.4-.5.9-.7 1.4H2.5v2h1.3c.1.5.4 1 .7 1.4l-.9.9 1.5 1.5.9-.9c.4.3.9.5 1.4.7v1.3h2v-1.3c.5-.1 1-.4 1.4-.7l.9.9 1.5-1.5-.9-.9c.3-.4.5-.9.7-1.4h1.3v-2zM7.5 10C6.1 10 5 8.9 5 7.5S6.1 5 7.5 5 10 6.1 10 7.5 8.9 10 7.5 10z\"/>",
+
+        CbIconName.Notification =>
+            "<path d=\"M8 16c1.1 0 2-.9 2-2H6c0 1.1.9 2 2 2zm6-4.6V7c0-2.9-2.1-5.4-5-5.9V.5h-2V1.1C4.1 1.6 2 4.1 2 7v4.4L0 13v1h16v-1l-2-1.6zM13 13H3v-.2l2-1.7V7c0-2.4 1.7-4.4 4-4.9V1h.1c2.3.4 3.9 2.5 3.9 5v4.1l2 1.7V13z\"/>",
+
+        CbIconName.User =>
+            "<path d=\"M8 1a3.5 3.5 0 100 7A3.5 3.5 0 008 1zm0 6a2.5 2.5 0 110-5 2.5 2.5 0 010 5zm0 3c-3 0-8 1.3-8 4v2h16v-2c0-2.7-5-4-8-4zm7 5H1v-1c0-1.4 3.5-3 7-3s7 1.6 7 3v1z\"/>",
+
+        CbIconName.ChevronDown =>
+            "<path d=\"M8 11L3 6l.7-.7L8 9.6l4.3-4.3.7.7z\"/>",
+
+        CbIconName.ChevronUp =>
+            "<path d=\"M8 5l5 5-.7.7L8 6.4 3.7 10.7 3 10z\"/>",
+
+        CbIconName.ChevronRight =>
+            "<path d=\"M11 8L6 3l.7-.7L11 6.6v.8L6.7 11.7 6 11z\"/>",
+
+        CbIconName.ChevronLeft =>
+            "<path d=\"M5 8l5-5 .7.7L6.4 8l4.3 4.3-.7.7z\"/>",
+
+        CbIconName.Add =>
+            "<path d=\"M9 7V3H7v4H3v2h4v4h2V9h4V7z\"/>",
+
+        CbIconName.Search =>
+            "<path d=\"M15 14.3L10.7 10c.8-1 1.3-2.4 1.3-4C12 2.7 9.3 0 6 0S0 2.7 0 6s2.7 6 6 6c1.6 0 3-.5 4-1.3L14.3 15 15 14.3zM6 11c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5z\"/>",
+
+        CbIconName.OverflowMenuVertical =>
+            "<circle cx=\"8\" cy=\"2\" r=\"1.5\"/><circle cx=\"8\" cy=\"8\" r=\"1.5\"/><circle cx=\"8\" cy=\"14\" r=\"1.5\"/>",
+
+        CbIconName.OverflowMenuHorizontal =>
+            "<circle cx=\"2\" cy=\"8\" r=\"1.5\"/><circle cx=\"8\" cy=\"8\" r=\"1.5\"/><circle cx=\"14\" cy=\"8\" r=\"1.5\"/>",
+
+        CbIconName.Information =>
+            "<path d=\"M8.5 11V6.5h-2v1h1V11H6v1h4v-1H8.5zM8 3.5a1 1 0 100 2 1 1 0 000-2z\"/><path d=\"M8 1a7 7 0 100 14A7 7 0 008 1zm0 13A6 6 0 118 2a6 6 0 010 12z\"/>",
+
+        CbIconName.Warning =>
+            "<path d=\"M8.93 1.62l6.25 11.55C15.57 13.9 14.96 15 14 15H2c-.96 0-1.57-1.1-1.18-1.83L7.07 1.62a1.08 1.08 0 011.86 0zM8 2.5L2.07 13.5h11.86L8 2.5zM8.5 11h-1V7h1v4zm0 2h-1v-1h1v1z\"/>",
+
+        CbIconName.CheckmarkFilled =>
+            "<path d=\"M8 1a7 7 0 100 14A7 7 0 008 1zm-.5 10.3L3.9 7.6l.8-.7L7.5 10l4-4 .8.7-4.8 4.6z\"/>",
+
+        CbIconName.ErrorFilled =>
+            "<path d=\"M8 1a7 7 0 100 14A7 7 0 008 1zm.5 10h-1V7h1v4zm0-5h-1V5h1v1z\"/>",
+
+        CbIconName.Filter =>
+            "<path d=\"M0 3v2h16V3zm3 4v2h10V7zm3 4v2h4v-2z\"/>",
+
+        CbIconName.Home =>
+            "<path d=\"M8.9 1.1L15 7.2V14h-4v-4H5v4H1V7.2l6.1-6.1c.4-.4 1.4-.4 1.8 0zM8 2.5L2 8.3V13h2v-4h8v4h2V8.3L8 2.5z\"/>",
+
+        CbIconName.Calendar =>
+            "<path d=\"M12 2h-1V0h-2v2H7V0H5v2H4C2.9 2 2 2.9 2 4v10c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm1 12H3V6h10v8zm0-9H3V4h1v1h2V4h2v1h2V4h2v1h1V4h1v1z\"/>",
+
+        CbIconName.Dashboard =>
+            "<path d=\"M1 1h6v6H1zm8 0h6v6H9zM1 9h6v6H1zm8 0h6v6H9z\"/>",
+
+        CbIconName.Edit =>
+            "<path d=\"M2 12.5V14h1.5l7.7-7.7-1.5-1.5L2 12.5zM14.7 4c.4-.4.4-1 0-1.4l-1.3-1.3a1 1 0 00-1.4 0l-1 1 2.7 2.7 1-1z\"/>",
+
+        CbIconName.TrashCan =>
+            "<path d=\"M12 5h-1V2H5v3H4v1h8V5zm-6-2h4v2H6V3zm5 10H5l-.5-7h7L11 13zm-4-5h1v4H7V8zm2 0h1v4H9V8z\"/>",
+
+        CbIconName.DocumentBlank =>
+            "<path d=\"M9 1H3v14h10V5L9 1zM4 14V2h5v3.5H12V14H4z\"/>",
+
+        CbIconName.Pharmacy =>
+            "<path d=\"M8 2a6 6 0 100 12A6 6 0 008 2zm.5 9h-1V8.5H5v-1h2.5V5h1v2.5H11v1H8.5V11z\"/>",
+
+        CbIconName.Hospital =>
+            "<path d=\"M10 7H9V5H7v2H6v1h1v2h2V8h1V7zM2 2v12h12V2H2zm11 11H3V3h10v10z\"/>",
+
+        CbIconName.Report =>
+            "<path d=\"M10 3H3v11h10V6L10 3zm2 9H4V4h5.5v3H12v5zM5 9h6v1H5zm0 2h6v1H5zm0-4h3v1H5z\"/>",
+
+        _ => ""
+    };
+}

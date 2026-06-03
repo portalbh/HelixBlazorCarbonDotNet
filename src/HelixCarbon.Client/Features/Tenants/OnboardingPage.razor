@@ -1,0 +1,53 @@
+@page "/onboarding"
+@rendermode InteractiveWebAssembly
+@inject HelixApiClient Api
+@inject TenantHeaderHandler TenantHeader
+@inject NavigationManager Navigation
+
+<PageTitle>Onboarding</PageTitle>
+
+<h1 class="helix-page-title">Create your workspace</h1>
+
+<div class="helix-form">
+    <CbTextInput Label="Tenant slug" @bind-Value="_slug" HelperText="Used for subdomain and X-Tenant header" />
+    <CbTextInput Label="Company name" @bind-Value="_name" />
+    <CbTextInput Label="Admin email" @bind-Value="_email" />
+    <CbTextInput Label="Admin password" Type="password" @bind-Value="_password" />
+    <CbSelect Label="Plan" @bind-Value="_planValue">
+        <option value="0">Free</option>
+        <option value="1">Pro</option>
+    </CbSelect>
+    <CbButton OnClick="SubmitAsync">Create tenant</CbButton>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(_message))
+{
+    <CbNotification Kind="@_notificationKind" Title="@_message" />
+}
+
+@code {
+    private string _slug = "acme";
+    private string _name = "Acme Inc";
+    private string _email = "admin@acme.local";
+    private string _password = "Admin123!";
+    private string _planValue = "0";
+    private string? _message;
+    private CbNotificationKind _notificationKind = CbNotificationKind.Success;
+
+    private async Task SubmitAsync()
+    {
+        var plan = Enum.TryParse<SubscriptionPlan>(_planValue, out var p) ? p : SubscriptionPlan.Free;
+        var tenant = await Api.OnboardAsync(new OnboardingRequest(_slug, _name, _email, _password, plan));
+        if (tenant is null)
+        {
+            _notificationKind = CbNotificationKind.Error;
+            _message = "Onboarding failed. Slug may already exist.";
+            return;
+        }
+
+        TenantHeader.TenantSlug = tenant.Slug;
+        _notificationKind = CbNotificationKind.Success;
+        _message = $"Workspace '{tenant.Name}' created. Switching tenant context to '{tenant.Slug}'.";
+        Navigation.NavigateTo("/dashboard");
+    }
+}

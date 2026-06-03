@@ -1,0 +1,15 @@
+@page "/login"
+@rendermode InteractiveWebAssembly
+@inject NavigationManager Navigation
+
+<PageTitle>Sign in</PageTitle>
+
+<h1 class="helix-page-title">Microsoft Entra ID</h1>
+
+<CbButton OnClick="BeginLogin">Sign in with Microsoft</CbButton>
+
+<p>Configure <code>AzureAd</code> in Client and Server appsettings, then register the SPA and API in Entra.</p>
+
+@code {
+    private void BeginLogin() => Navigation.NavigateTo("authentication/login");
+}

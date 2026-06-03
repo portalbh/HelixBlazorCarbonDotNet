@@ -1,0 +1,31 @@
+@page "/register"
+@rendermode InteractiveWebAssembly
+@inject HelixApiClient Api
+
+<PageTitle>Register user</PageTitle>
+
+<h1 class="helix-page-title">Register tenant user</h1>
+<p>Requires an authenticated tenant admin (BFF / Advanced auth).</p>
+
+<div class="helix-form">
+    <CbTextInput Label="Email" @bind-Value="_email" />
+    <CbTextInput Label="Password" Type="password" @bind-Value="_password" />
+    <CbButton OnClick="RegisterAsync">Register</CbButton>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(_message))
+{
+    <CbNotification Kind="CbNotificationKind.Info" Title="@_message" />
+}
+
+@code {
+    private string _email = string.Empty;
+    private string _password = string.Empty;
+    private string? _message;
+
+    private async Task RegisterAsync()
+    {
+        var ok = await Api.RegisterAsync(new RegisterRequest(_email, _password, TenantRole.User));
+        _message = ok ? "User registered." : "Registration failed. Sign in as admin first.";
+    }
+}

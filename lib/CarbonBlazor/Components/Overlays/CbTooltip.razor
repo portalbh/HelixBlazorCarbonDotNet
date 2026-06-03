@@ -1,0 +1,13 @@
+<span class="@ClassName" @attributes="AdditionalAttributes">
+    <span class="cb-tooltip__trigger" tabindex="0" aria-describedby="@TooltipId">@ChildContent</span>
+    <span id="@TooltipId" class="cb-tooltip__content" role="tooltip">@Text</span>
+</span>
+
+@code {
+    private readonly string TooltipId = $"cb-tooltip-{Guid.NewGuid():N}";
+    [Parameter] public string Text { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private string ClassName => new CssBuilder("cb-tooltip").Add(Class).ToString();
+}

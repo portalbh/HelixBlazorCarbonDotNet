@@ -1,0 +1,31 @@
+CREATE TABLE IF NOT EXISTS Tenants (
+    Id TEXT NOT NULL PRIMARY KEY,
+    Slug TEXT NOT NULL UNIQUE,
+    Name TEXT NOT NULL,
+    Plan INTEGER NOT NULL DEFAULT 0,
+    CreatedAt TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Users (
+    Id TEXT NOT NULL PRIMARY KEY,
+    TenantId TEXT NOT NULL,
+    Email TEXT NOT NULL,
+    PasswordHash TEXT NOT NULL,
+    Role INTEGER NOT NULL DEFAULT 0,
+    CreatedAt TEXT NOT NULL,
+    FOREIGN KEY (TenantId) REFERENCES Tenants(Id)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS IX_Users_TenantEmail ON Users (TenantId, Email);
+
+CREATE TABLE IF NOT EXISTS Products (
+    Id TEXT NOT NULL PRIMARY KEY,
+    TenantId TEXT NOT NULL,
+    Name TEXT NOT NULL,
+    Description TEXT,
+    Price REAL NOT NULL,
+    CreatedAt TEXT NOT NULL,
+    FOREIGN KEY (TenantId) REFERENCES Tenants(Id)
+);
+
+CREATE INDEX IF NOT EXISTS IX_Products_TenantId ON Products (TenantId);

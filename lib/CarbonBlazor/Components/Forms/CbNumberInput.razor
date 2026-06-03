@@ -1,0 +1,19 @@
+<CbTextInput Label="@Label" Type="number" Value="@TextValue" ValueChanged="OnTextChanged" Placeholder="@Placeholder" HelperText="@HelperText" Invalid="@Invalid" InvalidText="@InvalidText" Disabled="@Disabled" ReadOnly="@ReadOnly" />
+
+@code {
+    [Parameter] public string Label { get; set; } = "Number";
+    [Parameter] public double? Value { get; set; }
+    [Parameter] public EventCallback<double?> ValueChanged { get; set; }
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? HelperText { get; set; }
+    [Parameter] public string? InvalidText { get; set; }
+    [Parameter] public bool Invalid { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool ReadOnly { get; set; }
+    private string? TextValue => Value?.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    private async Task OnTextChanged(string? text)
+    {
+        Value = double.TryParse(text, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var value) ? value : null;
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

@@ -1,0 +1,10 @@
+<NavLink class="cb-header__link" href="@Href" Match="@Match" @attributes="AdditionalAttributes">
+    @ChildContent
+</NavLink>
+
+@code {
+    [Parameter] public string Href { get; set; } = "#";
+    [Parameter] public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+}

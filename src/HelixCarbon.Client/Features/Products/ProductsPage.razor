@@ -1,0 +1,70 @@
+@page "/products"
+@rendermode InteractiveWebAssembly
+@inject HelixApiClient Api
+
+<PageTitle>Products</PageTitle>
+
+<h1 class="helix-page-title">Products</h1>
+
+<div class="helix-form" style="margin-bottom: 1.5rem;">
+    <CbTextInput Label="Name" @bind-Value="_newName" />
+    <CbTextInput Label="Description" @bind-Value="_newDescription" />
+    <CbNumberInput Label="Price" @bind-Value="_newPrice" />
+    <CbButton OnClick="CreateAsync">Add product</CbButton>
+</div>
+
+@if (_loading)
+{
+    <CbInlineLoading Description="Loading products..." />
+}
+else
+{
+    <CbDataTable TItem="ProductDto"
+                 Title="Tenant products"
+                 Items="_products"
+                 Columns="_columns" />
+}
+
+@code {
+    private bool _loading = true;
+    private List<ProductDto> _products = [];
+    private string _newName = string.Empty;
+    private string? _newDescription;
+    private double? _newPrice;
+
+    private List<CbDataTableColumn<ProductDto>> _columns = [];
+
+    protected override void OnInitialized()
+    {
+        _columns =
+        [
+            new() { Header = "Name", Text = p => p.Name },
+            new() { Header = "Price", Text = p => p.Price.ToString("C") },
+            new() { Header = "Description", Text = p => p.Description ?? "-" }
+        ];
+    }
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        _loading = true;
+        _products = (await Api.GetProductsAsync() ?? []).ToList();
+        _loading = false;
+    }
+
+    private async Task CreateAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_newName))
+        {
+            return;
+        }
+
+        var price = (decimal)(_newPrice ?? 0);
+        await Api.CreateProductAsync(new CreateProductRequest(_newName, _newDescription, price));
+        _newName = string.Empty;
+        _newDescription = null;
+        _newPrice = null;
+        await ReloadAsync();
+    }
+}

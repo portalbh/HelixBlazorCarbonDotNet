@@ -1,0 +1,29 @@
+<section class="@ClassName" role="@Role" aria-live="@AriaLive" @attributes="AdditionalAttributes">
+    <strong class="cb-notification__title">@Title</strong>
+    @if (!string.IsNullOrWhiteSpace(Subtitle))
+    {
+        <div class="cb-notification__subtitle">@Subtitle</div>
+    }
+    @ChildContent
+    @if (IsClosable)
+    {
+        <button class="cb-notification__close" type="button" aria-label="Close notification" @onclick="OnClose">×</button>
+    }
+</section>
+
+@code {
+    [Parameter] public CbNotificationKind Kind { get; set; } = CbNotificationKind.Info;
+    [Parameter] public string Title { get; set; } = "Notification";
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public bool Closable { get; set; }
+    [Parameter] public bool Closeable { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string Role => Kind is CbNotificationKind.Error or CbNotificationKind.Warning ? "alert" : "status";
+    private string AriaLive => Kind is CbNotificationKind.Error or CbNotificationKind.Warning ? "assertive" : "polite";
+    private bool IsClosable => Closable || Closeable;
+    private string ClassName => new CssBuilder("cb-notification").Add($"cb-notification--{Kind.ToString().ToLowerInvariant()}").Add(Class).ToString();
+}

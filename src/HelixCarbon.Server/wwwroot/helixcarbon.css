@@ -1,0 +1,11 @@
+/* HelixCarbon app overrides — prefer Carbon tokens via CbThemeProvider */
+.helix-page-title {
+    margin-bottom: 1rem;
+}
+
+.helix-dev-banner {
+    padding: 0.5rem 1rem;
+    background: var(--cds-layer-accent, #393939);
+    color: var(--cds-text-on-color, #fff);
+    font-size: 0.875rem;
+}

@@ -1,0 +1,37 @@
+@page "/login"
+@rendermode InteractiveWebAssembly
+@inject HelixApiClient Api
+@inject NavigationManager Navigation
+
+<PageTitle>Login</PageTitle>
+
+<h1 class="helix-page-title">Sign in</h1>
+
+<div class="helix-form">
+    <CbTextInput Label="Email" @bind-Value="_email" />
+    <CbTextInput Label="Password" Type="password" @bind-Value="_password" />
+    <CbButton OnClick="LoginAsync">Login</CbButton>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(_error))
+{
+    <CbNotification Kind="CbNotificationKind.Error" Title="Login failed" Subtitle="@_error" />
+}
+
+@code {
+    private string _email = "admin@demo.local";
+    private string _password = "Admin123!";
+    private string? _error;
+
+    private async Task LoginAsync()
+    {
+        var ok = await Api.LoginAsync(new LoginRequest(_email, _password));
+        if (!ok)
+        {
+            _error = "Invalid credentials or tenant not resolved (use X-Tenant: demo).";
+            return;
+        }
+
+        Navigation.NavigateTo("/dashboard");
+    }
+}

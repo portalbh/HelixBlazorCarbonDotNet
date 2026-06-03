@@ -1,0 +1,10 @@
+<li class="@ClassName" aria-current="@(Status == CbProgressStatus.Current ? "step" : null)">
+    <span class="cb-progress-step__marker" aria-hidden="true"></span>
+    <span>@Label</span>
+</li>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Step";
+    [Parameter] public CbProgressStatus Status { get; set; }
+    private string ClassName => new CssBuilder("cb-progress-step").Add($"cb-progress-step--{Status.ToString().ToLowerInvariant()}").ToString();
+}

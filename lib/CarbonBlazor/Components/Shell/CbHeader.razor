@@ -1,0 +1,52 @@
+<header class="@ClassName" @attributes="AdditionalAttributes">
+    @if (ShowMenuButton)
+    {
+        <button class="cb-header__button" type="button" aria-label="@MenuLabel" aria-expanded="@SideNavOpen" aria-controls="@MenuControls" @onclick="ToggleSideNav">
+            <CbIcon Name="CbIconName.Menu" Size="20" />
+        </button>
+    }
+    <a class="cb-header__name" href="@Href">
+        @if (!string.IsNullOrWhiteSpace(Prefix))
+        {
+            <span class="cb-header__prefix">@Prefix</span>
+        }
+        <strong>@ProductName</strong>
+    </a>
+    <nav class="cb-header__nav" aria-label="@NavLabel">
+        @NavContent
+    </nav>
+    <div class="cb-header__actions">
+        @Actions
+    </div>
+</header>
+
+@code {
+    [Parameter] public string ProductName { get; set; } = "CarbonBlazor";
+    [Parameter] public string? Prefix { get; set; }
+    [Parameter] public string Href { get; set; } = "/";
+    [Parameter] public string MenuLabel { get; set; } = "Open navigation";
+    [Parameter] public string? MenuControls { get; set; }
+    [Parameter] public string NavLabel { get; set; } = "Header navigation";
+    [Parameter] public bool ShowMenuButton { get; set; } = true;
+    [Parameter] public bool SideNavOpen { get; set; }
+    [Parameter] public EventCallback<bool> SideNavOpenChanged { get; set; }
+    [Parameter] public EventCallback OnMenuToggle { get; set; }
+    [Parameter] public RenderFragment? NavContent { get; set; }
+    [Parameter] public RenderFragment? Actions { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string ClassName => new CssBuilder("cb-header").Add("cb-header--nav-open", SideNavOpen).Add(Class).ToString();
+
+    private async Task ToggleSideNav()
+    {
+        if (OnMenuToggle.HasDelegate)
+        {
+            await OnMenuToggle.InvokeAsync();
+            return;
+        }
+
+        SideNavOpen = !SideNavOpen;
+        await SideNavOpenChanged.InvokeAsync(SideNavOpen);
+    }
+}

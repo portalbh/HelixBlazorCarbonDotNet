@@ -1,0 +1,15 @@
+<div class="@ClassName" @attributes="AdditionalAttributes">
+    <code>@Code</code>
+    @if (ChildContent is not null)
+    {
+        @ChildContent
+    }
+</div>
+
+@code {
+    [Parameter] public string? Code { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private string ClassName => new CssBuilder("cb-code-snippet").Add(Class).ToString();
+}

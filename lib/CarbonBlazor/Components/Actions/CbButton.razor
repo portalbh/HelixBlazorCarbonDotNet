@@ -1,0 +1,25 @@
+<button class="@ClassName" type="@Type" disabled="@Disabled" @onclick="OnClick" @attributes="AdditionalAttributes">
+    <span>@ChildContent</span>
+    @if (!string.IsNullOrWhiteSpace(Icon))
+    {
+        <span class="cb-btn__icon" aria-hidden="true">@Icon</span>
+    }
+</button>
+
+@code {
+    [Parameter] public CbButtonVariant Variant { get; set; } = CbButtonVariant.Primary;
+    [Parameter] public CbSize Size { get; set; } = CbSize.Medium;
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string Type { get; set; } = "button";
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string ClassName => new CssBuilder("cb-btn")
+        .Add($"cb-btn--{Variant.ToString().ToLowerInvariant()}")
+        .Add($"cb-btn--{Size.ToString().ToLowerInvariant()}")
+        .Add(Class)
+        .ToString();
+}

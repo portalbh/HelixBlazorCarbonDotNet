@@ -1,0 +1,8 @@
+<div class="@ClassName" role="row" @attributes="AdditionalAttributes">@ChildContent</div>
+
+@code {
+    [Parameter] public bool Header { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private string ClassName => new CssBuilder("cb-structured-list__row").Add("cb-structured-list__row--header", Header).ToString();
+}

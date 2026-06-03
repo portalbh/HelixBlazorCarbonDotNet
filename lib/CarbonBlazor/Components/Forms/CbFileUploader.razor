@@ -1,0 +1,17 @@
+<div class="cb-form-item cb-file">
+    <label class="cb-label">@Label</label>
+    <InputFile class="cb-input cb-file__input" OnChange="@OnFilesSelected" multiple="@Multiple" accept="@Accept" disabled="@Disabled" />
+    @if (!string.IsNullOrWhiteSpace(HelperText))
+    {
+        <div class="cb-helper">@HelperText</div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Upload files";
+    [Parameter] public string? HelperText { get; set; }
+    [Parameter] public string? Accept { get; set; }
+    [Parameter] public bool Multiple { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public EventCallback<InputFileChangeEventArgs> OnFilesSelected { get; set; }
+}

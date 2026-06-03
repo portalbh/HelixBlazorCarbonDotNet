@@ -1,0 +1,86 @@
+@implements IAsyncDisposable
+@inject IJSRuntime Js
+
+<li class="cb-tree__node" role="treeitem" aria-expanded="@(HasChildren ? Node.Expanded : null)" aria-disabled="@Node.Disabled">
+    <button class="cb-tree__label" type="button" disabled="@Node.Disabled" data-roving-item tabindex="0" @onclick="Toggle" @onkeydown="OnKeyDown">
+        <span aria-hidden="true">@(HasChildren ? (Node.Expanded ? "▾" : "▸") : "")</span>
+        <span>@Node.Label</span>
+    </button>
+    @if (HasChildren && Node.Expanded)
+    {
+        <ul role="group">
+            @foreach (var child in Node.Children)
+            {
+                <CbTreeViewNode Node="@child" />
+            }
+        </ul>
+    }
+</li>
+
+@code {
+    private IJSObjectReference? _module;
+
+    [CascadingParameter(Name = "TreeRootId")] public string? TreeRootId { get; set; }
+    [Parameter, EditorRequired] public CbTreeNode Node { get; set; } = new();
+    private bool HasChildren => Node.Children.Count > 0;
+
+    private void Toggle()
+    {
+        if (HasChildren)
+        {
+            Node.Expanded = !Node.Expanded;
+        }
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs args)
+    {
+        switch (args.Key)
+        {
+            case "ArrowRight":
+                if (HasChildren && !Node.Expanded)
+                {
+                    Node.Expanded = true;
+                }
+                else
+                {
+                    await MoveFocus(1);
+                }
+                break;
+            case "ArrowLeft":
+                if (HasChildren && Node.Expanded)
+                {
+                    Node.Expanded = false;
+                }
+                else
+                {
+                    await MoveFocus(-1);
+                }
+                break;
+            case "ArrowDown":
+                await MoveFocus(1);
+                break;
+            case "ArrowUp":
+                await MoveFocus(-1);
+                break;
+        }
+    }
+
+    private async Task MoveFocus(int delta)
+    {
+        if (string.IsNullOrWhiteSpace(TreeRootId))
+        {
+            return;
+        }
+
+        _module ??= await Js.InvokeAsync<IJSObjectReference>("import", "./_content/CarbonBlazor/carbon-blazor.js");
+        await _module.InvokeVoidAsync("moveTreeFocus", TreeRootId, delta);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is not null)
+        {
+            await _module.DisposeAsync();
+        }
+    }
+}

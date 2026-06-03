@@ -1,0 +1,28 @@
+<fieldset class="@ClassName" @attributes="AdditionalAttributes">
+    <legend class="cb-label">@Legend</legend>
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+    @if (!string.IsNullOrWhiteSpace(HelperText))
+    {
+        <div class="cb-helper">@HelperText</div>
+    }
+</fieldset>
+
+@code {
+    [Parameter] public string Legend { get; set; } = "Options";
+    [Parameter] public string? Name { get; set; }
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+    [Parameter] public string? HelperText { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    internal string GroupName { get; } = $"cb-radio-{Guid.NewGuid():N}";
+    private string ClassName => new CssBuilder("cb-radio-group").Add(Class).ToString();
+    internal async Task SetValue(string? value)
+    {
+        Value = value;
+        await ValueChanged.InvokeAsync(value);
+    }
+}

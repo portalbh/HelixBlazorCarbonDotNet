@@ -1,0 +1,50 @@
+<nav class="@ClassName" aria-label="@Label" @attributes="AdditionalAttributes">
+    <span class="cb-pagination__summary">@StartItem-@EndItem of @TotalItems items</span>
+    <label>
+        <span>Items per page</span>
+        <select value="@PageSize" @onchange="OnPageSizeChanged">
+            @foreach (var option in PageSizeOptions)
+            {
+                <option value="@option">@option</option>
+            }
+        </select>
+    </label>
+    <div class="cb-pagination__controls">
+        <button type="button" disabled="@(Page <= 1)" @onclick="Previous" aria-label="Previous page">‹</button>
+        <span>Page @Page of @PageCount</span>
+        <button type="button" disabled="@(Page >= PageCount)" @onclick="Next" aria-label="Next page">›</button>
+    </div>
+</nav>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Pagination";
+    [Parameter] public int TotalItems { get; set; }
+    [Parameter] public int Page { get; set; } = 1;
+    [Parameter] public EventCallback<int> PageChanged { get; set; }
+    [Parameter] public int PageSize { get; set; } = 10;
+    [Parameter] public EventCallback<int> PageSizeChanged { get; set; }
+    [Parameter] public IReadOnlyList<int> PageSizeOptions { get; set; } = [10, 20, 50];
+    [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private int PageCount => Math.Max(1, (int)Math.Ceiling(TotalItems / (double)Math.Max(1, PageSize)));
+    private int StartItem => TotalItems == 0 ? 0 : ((Page - 1) * PageSize) + 1;
+    private int EndItem => Math.Min(TotalItems, Page * PageSize);
+    private string ClassName => new CssBuilder("cb-pagination").Add(Class).ToString();
+    private async Task Previous() => await SetPage(Math.Max(1, Page - 1));
+    private async Task Next() => await SetPage(Math.Min(PageCount, Page + 1));
+    private async Task SetPage(int page)
+    {
+        Page = page;
+        await PageChanged.InvokeAsync(page);
+    }
+    private async Task OnPageSizeChanged(ChangeEventArgs args)
+    {
+        if (int.TryParse(args.Value?.ToString(), out var size))
+        {
+            PageSize = size;
+            Page = 1;
+            await PageSizeChanged.InvokeAsync(size);
+            await PageChanged.InvokeAsync(Page);
+        }
+    }
+}
