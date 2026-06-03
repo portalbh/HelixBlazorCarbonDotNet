@@ -1,25 +1,26 @@
-<div class="cb-theme-toggle" role="group" aria-label="@Label">
+<button type="button"
+        class="cb-icon-btn cb-theme-toggle__cycle"
+        data-cb-theme-cycle
+        aria-label="@Label"
+        title="Switch theme">
     @foreach (var theme in Themes)
     {
-        <button type="button"
-                class="cb-icon-btn cb-theme-toggle__btn"
-                data-cb-theme-value="@theme.Value"
-                aria-label="@theme.Label"
-                aria-pressed="false"
-                title="@theme.Label">
-            <span class="cb-theme-toggle__swatch cb-theme-toggle__swatch--@theme.Swatch" aria-hidden="true"></span>
-        </button>
+        <span class="cb-theme-toggle__icon@(theme.Value == nameof(CbTheme.G100) ? " cb-theme-toggle__icon--active" : "")"
+              data-cb-theme-icon="@theme.Value"
+              aria-hidden="true">
+            <CbIcon Name="@theme.Icon" />
+        </span>
     }
-</div>
+</button>
 
 @code {
-    [Parameter] public string Label { get; set; } = "Theme";
+    [Parameter] public string Label { get; set; } = "Switch theme";
 
-    private static readonly (string Value, string Label, string Swatch)[] Themes =
+    private static readonly (string Value, CbIconName Icon, string Label)[] Themes =
     [
-        (nameof(CbTheme.White), "White theme", "white"),
-        (nameof(CbTheme.G10), "Gray 10 theme", "g10"),
-        (nameof(CbTheme.G90), "Gray 90 theme", "g90"),
-        (nameof(CbTheme.G100), "Gray 100 theme", "g100")
+        (nameof(CbTheme.White), CbIconName.Light, "White theme"),
+        (nameof(CbTheme.G10), CbIconName.Cloud, "Gray 10 theme"),
+        (nameof(CbTheme.G90), CbIconName.Contrast, "Gray 90 theme"),
+        (nameof(CbTheme.G100), CbIconName.Asleep, "Gray 100 theme")
     ];
 }

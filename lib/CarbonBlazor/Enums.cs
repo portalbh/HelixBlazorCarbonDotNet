@@ -104,5 +104,7 @@ public enum CbIconName
     Hospital,
     Report,
     Light,
-    Asleep
+    Asleep,
+    Cloud,
+    Contrast
 }

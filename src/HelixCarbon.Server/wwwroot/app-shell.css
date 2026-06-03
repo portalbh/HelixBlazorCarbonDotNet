@@ -1,12 +1,69 @@
-/* App shell — Carbon layout helpers and HelixCarbon page structure */
+/* App shell — Carbon UI shell layout and page structure */
 
-.helix-shell .cb-content {
-  max-width: 99rem;
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: #161616;
 }
 
+.cb-theme.helix-shell {
+  min-height: 100vh;
+  background: var(--cb-background);
+}
+
+/* Desktop: sidenav rail full height, header aligned to content column */
 @media (min-width: 1056px) {
+  .helix-shell .cb-side-nav {
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+    transform: translateX(0);
+    background: var(--cb-layer);
+    border-right: 1px solid var(--cb-border-subtle);
+  }
+
+  .helix-shell .cb-header {
+    position: fixed;
+    top: 0;
+    left: 16rem;
+    right: 0;
+    width: auto;
+    background: var(--cb-background);
+    border-bottom: 1px solid var(--cb-border-subtle);
+  }
+
+  .helix-shell:has(.cb-side-nav--collapsed) .cb-header {
+    left: 3rem;
+  }
+
   .helix-shell .cb-header__nav {
     display: none;
+  }
+
+  .helix-shell .cb-content.cb-content--with-side-nav {
+    margin-left: 16rem;
+    margin-top: 3rem;
+    max-width: none;
+    min-height: calc(100vh - 3rem);
+  }
+
+  .helix-shell .cb-content.cb-content--with-side-nav.cb-content--side-nav-collapsed {
+    margin-left: 3rem;
+  }
+}
+
+@media (max-width: 1055px) {
+  .helix-shell .cb-header {
+    position: sticky;
+    left: 0;
+  }
+
+  .helix-shell .cb-content.cb-content--with-side-nav {
+    margin-left: 0;
+    margin-top: 0;
+    max-width: none;
   }
 }
 

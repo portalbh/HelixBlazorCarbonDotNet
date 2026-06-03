@@ -1058,14 +1058,20 @@ a.cb-link:hover { text-decoration: underline; }
 
 /* ── Header select ──────────────────────────────── */
 
-.cb-theme-toggle {
-  display: inline-flex;
-  align-items: stretch;
+/* ── Theme cycle button ─────────────────────────── */
+
+.cb-theme-toggle__cycle {
   border-left: 1px solid var(--cb-border-subtle);
 }
 
-.cb-theme-toggle__btn {
-  border-radius: 0;
+.cb-theme-toggle__icon {
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.cb-theme-toggle__icon--active {
+  display: inline-flex;
 }
 
 .cb-theme-toggle__swatch {
