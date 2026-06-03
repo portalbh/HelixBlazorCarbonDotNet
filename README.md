@@ -14,7 +14,7 @@
 
 | Parameter | CLI flag | Values | Default |
 |-----------|----------|--------|---------|
-| Authentication | `--auth` | `None`, `BFF`, `Advanced`, `Azure` | `BFF` |
+| Authentication | `--auth` (`authMode`) | `None`, `BFF`, `Advanced`, `Azure` | `BFF` |
 | Database | `--database` | `Sqlite`, `Postgres` | `Sqlite` |
 | Seed demo data | `--seedDemoData` | `true` / `false` | `true` |
 | Default tenant slug | `--defaultTenant` | any slug | `demo` |
@@ -27,29 +27,35 @@ dotnet new myt3-carbon-saas -n Contoso --auth Advanced --seedDemoData false --us
 dotnet new myt3-carbon-saas -n Contoso --auth Azure --defaultTenant acme
 ```
 
+The generated output is a full solution at `{Name}.slnx` (CLI) with `src/{Name}.Shared`, `src/{Name}.Client`, `src/{Name}.Server`, and `lib/CarbonBlazor`, plus `Directory.Build.props`, `Directory.Packages.props`, and `global.json`.
+
 ## Visual Studio 2022+
 
 1. Install the template pack (once per machine):
 
    ```powershell
    dotnet pack HelixCarbon.TemplatePack.csproj -o ./artifacts
-   dotnet new install .\artifacts\PortalBH.HelixCarbon.SaaS.1.1.0.nupkg
+   dotnet new install .\artifacts\PortalBH.HelixCarbon.SaaS.1.1.3.nupkg
    ```
 
 2. In Visual Studio: **Create a new project** → search **HelixCarbon** or **T3 SaaS**.
 
-3. Use the wizard to pick **Authentication**, **Database**, **Seed demo data**, **Default tenant slug**, and **Enable HTTPS**. The generated solution is ready to open and run.
+3. Use the wizard to pick **Authentication**, **Database**, **Seed demo data**, **Default tenant slug**, and **Enable HTTPS**. Visual Studio creates a **solution with all projects** (Shared, Client, Server, and vendored CarbonBlazor) and opens it automatically.
 
 4. Update `appsettings.json` connection strings (especially PostgreSQL) before deploying. The `App` section (seed, default tenant) is not renamed when you use `-n`; only project/namespace names change.
 
-> VS uses the same `template.json` parameters as `dotnet new`; no separate `.vstemplate` is required.
+> VS uses the same `template.json` parameters as `dotnet new` (via `ide.host.json`). The parameter is named `authMode` (not `auth`) so Visual Studio shows a normal dropdown instead of the built-in Entra/Individual auth picker.
+
+After reinstalling the template pack, restart Visual Studio or run `devenv /updateconfiguration` if options do not appear immediately.
+
+Visual Studio runs **Server** as the startup project via the bundled `*.slnLaunch` profile (Blazor host). The default project name is **HelixCarbon** unless you change it on the first wizard screen.
 
 ## Pack and install
 
 ```powershell
 cd C:\Repo\template
 dotnet pack HelixCarbon.TemplatePack.csproj -o ./artifacts
-dotnet new install .\artifacts\PortalBH.HelixCarbon.SaaS.1.1.0.nupkg
+dotnet new install .\artifacts\PortalBH.HelixCarbon.SaaS.1.1.3.nupkg
 dotnet new list myt3-carbon-saas
 ```
 
@@ -62,8 +68,9 @@ dotnet new uninstall PortalBH.HelixCarbon.SaaS
 ## Run generated app
 
 ```powershell
-cd Contoso\src\HelixCarbon.Server
-dotnet run
+cd Contoso
+dotnet build Contoso.slnx
+dotnet run --project src/Contoso.Server
 ```
 
 Open `https://localhost:7151` and send tenant context:
@@ -76,11 +83,15 @@ Open `https://localhost:7151` and send tenant context:
 ## Project layout
 
 ```text
+HelixCarbon.app.slnx    # Solution (renamed to {Name}.slnx when created via CLI)
 src/
   HelixCarbon.Shared/   # DTOs, enums, models
   HelixCarbon.Server/   # APIs, middleware, host
   HelixCarbon.Client/   # Carbon UI, features
 lib/CarbonBlazor/       # Vendored Carbon RCL (swap for NuGet when published)
+Directory.Build.props
+Directory.Packages.props
+global.json
 ```
 
 ## Extending

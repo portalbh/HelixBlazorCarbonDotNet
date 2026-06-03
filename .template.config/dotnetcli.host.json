@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/dotnetcli.host",
+  "symbolInfo": {
+    "authMode": {
+      "longName": "auth",
+      "shortName": "au"
+    },
+    "database": {
+      "longName": "database",
+      "shortName": "da"
+    },
+    "seedDemoData": {
+      "longName": "seed-demo-data",
+      "shortName": "s"
+    },
+    "defaultTenant": {
+      "longName": "default-tenant",
+      "shortName": "de"
+    },
+    "useHttps": {
+      "longName": "use-https",
+      "shortName": "us"
+    }
+  }
+}

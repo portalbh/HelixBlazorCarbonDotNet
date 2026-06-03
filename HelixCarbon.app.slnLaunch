@@ -1,0 +1,11 @@
+[
+  {
+    "Name": "HelixCarbon",
+    "Projects": [
+      {
+        "Path": "src\\HelixCarbon.Server\\HelixCarbon.Server.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

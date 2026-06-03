@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json.schemastore.org/vs-2017.3.host",
+  "symbolInfo": [
+    {
+      "id": "authMode",
+      "name": { "text": "Authentication" },
+      "isVisible": true
+    },
+    {
+      "id": "database",
+      "name": { "text": "Database" },
+      "isVisible": true
+    },
+    {
+      "id": "seedDemoData",
+      "name": { "text": "Seed demo data" },
+      "isVisible": true
+    },
+    {
+      "id": "defaultTenant",
+      "name": { "text": "Default tenant slug" },
+      "isVisible": true
+    },
+    {
+      "id": "useHttps",
+      "name": { "text": "Enable HTTPS" },
+      "isVisible": true
+    }
+  ],
+  "additionalWizardParameters": {
+    "$isMultiProjectTemplate$": "true"
+  }
+}

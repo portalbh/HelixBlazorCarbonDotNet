@@ -1,10 +1,10 @@
 <Solution>
-  <Folder Name="/lib/">
-    <Project Path="lib/CarbonBlazor/CarbonBlazor.csproj" />
-  </Folder>
+  <Project Path="src/HelixCarbon.Server/HelixCarbon.Server.csproj" />
   <Folder Name="/src/">
     <Project Path="src/HelixCarbon.Shared/HelixCarbon.Shared.csproj" />
     <Project Path="src/HelixCarbon.Client/HelixCarbon.Client.csproj" />
-    <Project Path="src/HelixCarbon.Server/HelixCarbon.Server.csproj" />
+  </Folder>
+  <Folder Name="/lib/">
+    <Project Path="lib/CarbonBlazor/CarbonBlazor.csproj" />
   </Folder>
 </Solution>

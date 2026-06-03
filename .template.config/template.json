@@ -6,17 +6,37 @@
   "description": "Multi-tenant Blazor WebAssembly SaaS with IBM Carbon UI, Dapper, Minimal APIs, ApexCharts, and configurable database and authentication.",
   "identity": "PortalBH.HelixCarbon.SaaS",
   "shortName": "myt3-carbon-saas",
+  "defaultName": "HelixCarbon",
   "tags": {
     "language": "C#",
-    "type": "project"
+    "type": "solution",
+    "editorTreatAs": "solution",
+    "vs_showParametersByDefault": "true"
   },
   "sourceName": "HelixCarbon",
   "preferNameDirectory": true,
   "primaryOutputs": [
-    { "path": "src/HelixCarbon.Server/HelixCarbon.Server.csproj" }
+    { "path": "HelixCarbon.app.slnx" },
+    { "path": "HelixCarbon.app.slnLaunch" },
+    { "path": "src/HelixCarbon.Shared/HelixCarbon.Shared.csproj" },
+    { "path": "src/HelixCarbon.Client/HelixCarbon.Client.csproj" },
+    { "path": "src/HelixCarbon.Server/HelixCarbon.Server.csproj" },
+    { "path": "lib/CarbonBlazor/CarbonBlazor.csproj" }
+  ],
+  "postActions": [
+    {
+      "condition": "(HostIdentifier == \"dotnetcli\" || HostIdentifier == \"dotnetcli-preview\")",
+      "description": "Restore NuGet packages required by the solution.",
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA902F",
+      "continueOnError": true
+    }
   ],
   "symbols": {
-    "auth": {
+    "HostIdentifier": {
+      "type": "bind",
+      "binding": "HostIdentifier"
+    },
+    "authMode": {
       "type": "parameter",
       "description": "Authentication for the API and UI.",
       "datatype": "choice",
@@ -88,10 +108,10 @@
       "defaultValue": "true",
       "displayName": "Enable HTTPS"
     },
-    "AuthNone": { "type": "computed", "value": "(auth == None)" },
-    "AuthAzure": { "type": "computed", "value": "(auth == Azure)" },
-    "AuthBFF": { "type": "computed", "value": "(auth == BFF)" },
-    "AuthAdvanced": { "type": "computed", "value": "(auth == Advanced)" },
+    "AuthNone": { "type": "computed", "value": "(authMode == None)" },
+    "AuthAzure": { "type": "computed", "value": "(authMode == Azure)" },
+    "AuthBFF": { "type": "computed", "value": "(authMode == BFF)" },
+    "AuthAdvanced": { "type": "computed", "value": "(authMode == Advanced)" },
     "DB_Sqlite": { "type": "computed", "value": "(database == Sqlite)" },
     "DB_Postgres": { "type": "computed", "value": "(database == Postgres)" },
     "SeedDemoData": { "type": "computed", "value": "(seedDemoData == true)" },
@@ -119,11 +139,11 @@
       ],
       "modifiers": [
         {
-          "condition": "(auth != Azure)",
+          "condition": "(authMode != Azure)",
           "exclude": [ "**/Features/Auth/AzureLoginPage.razor" ]
         },
         {
-          "condition": "(auth == Azure)",
+          "condition": "(authMode == Azure)",
           "exclude": [
             "**/Features/Auth/LoginPage.razor",
             "**/Features/Auth/RegisterPage.razor",
@@ -131,7 +151,7 @@
           ]
         },
         {
-          "condition": "(auth == None)",
+          "condition": "(authMode == None)",
           "exclude": [
             "**/Features/Auth/LoginPage.razor",
             "**/Features/Auth/RegisterPage.razor",
@@ -164,6 +184,13 @@
           "exclude": [
             "**/Properties/launchSettings.https.json"
           ]
+        },
+        {
+          "condition": "(HostIdentifier == \"dotnetcli\" || HostIdentifier == \"dotnetcli-preview\")",
+          "rename": {
+            "HelixCarbon.app.slnx": "HelixCarbon.slnx",
+            "HelixCarbon.app.slnLaunch": "HelixCarbon.slnLaunch"
+          }
         }
       ]
     }
