@@ -5,7 +5,7 @@
     <PackageId>PortalBH.HelixCarbon.SaaS</PackageId>
     <Title>HelixCarbon T3-Style SaaS</Title>
     <Description>Modern T3-inspired Blazor WebAssembly SaaS starter with Carbon Design, Dapper, Minimal APIs, Multi-Tenancy, and ApexCharts</Description>
-    <PackageVersion>1.0.4</PackageVersion>
+    <PackageVersion>1.1.0</PackageVersion>
     <Authors>Portal.bh</Authors>
     <PackageTags>dotnet-new;templates;blazor;saas</PackageTags>
     <TargetFramework>net10.0</TargetFramework>
@@ -19,7 +19,7 @@
   <ItemGroup>
     <Compile Remove="**\*" />
     <Content Include="**\*"
-             Exclude="artifacts/**;build/**;build\**;**\_ref\**;**\_carbon_tmp\**;**\bin\**;**\obj\**;**\.vs\**;**\*.nupkg;HelixCarbon.TemplatePack.csproj" />
+             Exclude="artifacts/**;build/**;build\**;_testgen/**;**\_ref\**;**\_carbon_tmp\**;**\bin\**;**\obj\**;**\.vs\**;**\*.nupkg;HelixCarbon.TemplatePack.csproj" />
   </ItemGroup>
 
 </Project>

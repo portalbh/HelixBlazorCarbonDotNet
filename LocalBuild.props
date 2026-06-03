@@ -1,6 +1,6 @@
 <Project>
   <!-- Present only in the template repo so `dotnet build` works before `dotnet new`. Not packed into the template. -->
   <PropertyGroup>
-    <DefineConstants>$(DefineConstants);AuthBFF;AuthAdvanced</DefineConstants>
+    <DefineConstants>$(DefineConstants);AuthBFF;AuthAdvanced;DB_Sqlite</DefineConstants>
   </PropertyGroup>
 </Project>

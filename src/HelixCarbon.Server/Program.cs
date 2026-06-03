@@ -27,6 +27,7 @@ var app = builder.Build();
 await DatabaseInitializer.EnsureSchemaAsync(
     app.Services.GetRequiredService<IDbConnectionFactory>(),
     app.Environment,
+    app.Configuration,
     app.Logger);
 
 if (app.Environment.IsDevelopment())

@@ -12,23 +12,44 @@
 
 ## Template parameters
 
-| Parameter | Values | Default |
-|-----------|--------|---------|
-| `--auth` | `None`, `Azure`, `BFF`, `Advanced` | `None` |
+| Parameter | CLI flag | Values | Default |
+|-----------|----------|--------|---------|
+| Authentication | `--auth` | `None`, `BFF`, `Advanced`, `Azure` | `BFF` |
+| Database | `--database` | `Sqlite`, `Postgres` | `Sqlite` |
+| Seed demo data | `--seedDemoData` | `true` / `false` | `true` |
+| Default tenant slug | `--defaultTenant` | any slug | `demo` |
+| Enable HTTPS | `--useHttps` | `true` / `false` | `true` |
 
 ```bash
 dotnet new myt3-carbon-saas -n Contoso
-dotnet new myt3-carbon-saas -n Contoso --auth BFF
-dotnet new myt3-carbon-saas -n Contoso --auth Advanced
-dotnet new myt3-carbon-saas -n Contoso --auth Azure
+dotnet new myt3-carbon-saas -n Contoso --auth BFF --database Postgres
+dotnet new myt3-carbon-saas -n Contoso --auth Advanced --seedDemoData false --useHttps false
+dotnet new myt3-carbon-saas -n Contoso --auth Azure --defaultTenant acme
 ```
+
+## Visual Studio 2022+
+
+1. Install the template pack (once per machine):
+
+   ```powershell
+   dotnet pack HelixCarbon.TemplatePack.csproj -o ./artifacts
+   dotnet new install .\artifacts\PortalBH.HelixCarbon.SaaS.1.1.0.nupkg
+   ```
+
+2. In Visual Studio: **Create a new project** → search **HelixCarbon** or **T3 SaaS**.
+
+3. Use the wizard to pick **Authentication**, **Database**, **Seed demo data**, **Default tenant slug**, and **Enable HTTPS**. The generated solution is ready to open and run.
+
+4. Update `appsettings.json` connection strings (especially PostgreSQL) before deploying. The `App` section (seed, default tenant) is not renamed when you use `-n`; only project/namespace names change.
+
+> VS uses the same `template.json` parameters as `dotnet new`; no separate `.vstemplate` is required.
 
 ## Pack and install
 
 ```powershell
 cd C:\Repo\template
 dotnet pack HelixCarbon.TemplatePack.csproj -o ./artifacts
-dotnet new install .\artifacts\PortalBH.HelixCarbon.SaaS.1.0.4.nupkg
+dotnet new install .\artifacts\PortalBH.HelixCarbon.SaaS.1.1.0.nupkg
 dotnet new list myt3-carbon-saas
 ```
 

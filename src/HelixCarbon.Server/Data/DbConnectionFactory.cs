@@ -1,6 +1,10 @@
 using System.Data;
+#if DB_Sqlite
 using Microsoft.Data.Sqlite;
+#endif
+#if DB_Postgres
 using Npgsql;
+#endif
 
 namespace HelixCarbon.Server.Data;
 
@@ -19,8 +23,14 @@ public sealed class DbConnectionFactory(IConfiguration configuration) : IDbConne
 {
     public string Provider { get; } = configuration["Database:Provider"] ?? "Sqlite";
 
-    public IDbConnection CreateConnection() =>
-        Provider.Equals("Postgres", StringComparison.OrdinalIgnoreCase)
-            ? new NpgsqlConnection(configuration.GetConnectionString("Postgres"))
-            : new SqliteConnection(configuration.GetConnectionString("Sqlite"));
+    public IDbConnection CreateConnection()
+    {
+#if DB_Postgres
+        return new NpgsqlConnection(configuration.GetConnectionString("Postgres"));
+#elif DB_Sqlite
+        return new SqliteConnection(configuration.GetConnectionString("Sqlite"));
+#else
+        throw new NotSupportedException($"Database provider '{Provider}' is not compiled into this template variant.");
+#endif
+    }
 }

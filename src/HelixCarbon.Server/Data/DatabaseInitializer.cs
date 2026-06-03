@@ -1,11 +1,16 @@
 using System.Data;
 using Dapper;
+using Microsoft.Extensions.Configuration;
 
 namespace HelixCarbon.Server.Data;
 
 public static class DatabaseInitializer
 {
-    public static async Task EnsureSchemaAsync(IDbConnectionFactory factory, IWebHostEnvironment env, ILogger logger)
+    public static async Task EnsureSchemaAsync(
+        IDbConnectionFactory factory,
+        IWebHostEnvironment env,
+        IConfiguration configuration,
+        ILogger logger)
     {
         using var connection = factory.CreateConnection();
         connection.Open();
@@ -13,9 +18,13 @@ public static class DatabaseInitializer
         var schemaPath = Path.Combine(env.ContentRootPath, "Data", "Schema.sql");
         await ExecuteScriptAsync(connection, schemaPath, logger);
 
-        if (env.IsDevelopment())
+        var seedDemo = configuration.GetValue("App:SeedDemoData", true);
+        if (env.IsDevelopment() && seedDemo)
         {
-            var seedPath = Path.Combine(env.ContentRootPath, "Data", "Seed.sql");
+            var seedFile = factory.Provider.Equals("Postgres", StringComparison.OrdinalIgnoreCase)
+                ? "Seed.Postgres.sql"
+                : "Seed.sql";
+            var seedPath = Path.Combine(env.ContentRootPath, "Data", seedFile);
             await ExecuteScriptAsync(connection, seedPath, logger);
             await EnsureDemoPasswordAsync(connection, logger);
         }

@@ -1,9 +1,10 @@
 {
   "$schema": "http://json.schemastore.org/template",
   "author": "Portal.bh",
-  "classifications": [ "Web", "Blazor", "SaaS", "Multi-Tenant" ],
+  "classifications": [ "Web", "Blazor", "Web API", "SaaS", "Multi-Tenant", "Cloud" ],
+  "name": "HelixCarbon T3 SaaS",
+  "description": "Multi-tenant Blazor WebAssembly SaaS with IBM Carbon UI, Dapper, Minimal APIs, ApexCharts, and configurable database and authentication.",
   "identity": "PortalBH.HelixCarbon.SaaS",
-  "name": "myt3-carbon-saas",
   "shortName": "myt3-carbon-saas",
   "tags": {
     "language": "C#",
@@ -11,29 +12,98 @@
   },
   "sourceName": "HelixCarbon",
   "preferNameDirectory": true,
+  "primaryOutputs": [
+    { "path": "src/HelixCarbon.Server/HelixCarbon.Server.csproj" }
+  ],
   "symbols": {
     "auth": {
       "type": "parameter",
-      "description": "Authentication mode: None, Azure (Entra/MSAL), BFF (cookies), or Advanced (Identity-style cookies + Dapper users).",
+      "description": "Authentication for the API and UI.",
       "datatype": "choice",
-      "defaultValue": "None",
+      "defaultValue": "BFF",
+      "displayName": "Authentication",
       "choices": [
-        { "choice": "None", "description": "No authentication" },
-        { "choice": "Azure", "description": "Microsoft Entra ID + JWT API + MSAL client" },
-        { "choice": "BFF", "description": "Backend-for-Frontend cookie authentication" },
-        { "choice": "Advanced", "description": "Cookie auth with multi-tenant user store (Dapper)" }
+        {
+          "choice": "None",
+          "description": "Open APIs; no login UI (use X-Tenant header).",
+          "displayName": "None (development)"
+        },
+        {
+          "choice": "BFF",
+          "description": "Cookie-based auth on the same origin (recommended for Blazor).",
+          "displayName": "BFF (cookie, recommended)"
+        },
+        {
+          "choice": "Advanced",
+          "description": "Cookie auth with Dapper-backed users per tenant.",
+          "displayName": "Advanced (cookie + Dapper users)"
+        },
+        {
+          "choice": "Azure",
+          "description": "Microsoft Entra ID (MSAL) + JWT bearer API.",
+          "displayName": "Microsoft Entra ID (Azure AD)"
+        }
       ]
+    },
+    "database": {
+      "type": "parameter",
+      "description": "Database provider and default connection strings in appsettings.",
+      "datatype": "choice",
+      "defaultValue": "Sqlite",
+      "displayName": "Database",
+      "replaces": "__DATABASE_PROVIDER__",
+      "choices": [
+        {
+          "choice": "Sqlite",
+          "description": "File-based SQLite (ideal for local development).",
+          "displayName": "SQLite (development)"
+        },
+        {
+          "choice": "Postgres",
+          "description": "PostgreSQL (typical for production).",
+          "displayName": "PostgreSQL (production)"
+        }
+      ]
+    },
+    "seedDemoData": {
+      "type": "parameter",
+      "description": "Create a demo tenant, sample products, and admin user when running in Development.",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "displayName": "Seed demo data",
+      "replaces": "HelixCarbon_SeedDemoData"
+    },
+    "defaultTenant": {
+      "type": "parameter",
+      "description": "Default X-Tenant slug used by the Blazor client for local development.",
+      "datatype": "string",
+      "defaultValue": "demo",
+      "displayName": "Default tenant slug",
+      "replaces": "__DEFAULT_TENANT_SLUG__"
+    },
+    "useHttps": {
+      "type": "parameter",
+      "description": "Application URL scheme in launchSettings.",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "displayName": "Enable HTTPS"
     },
     "AuthNone": { "type": "computed", "value": "(auth == None)" },
     "AuthAzure": { "type": "computed", "value": "(auth == Azure)" },
     "AuthBFF": { "type": "computed", "value": "(auth == BFF)" },
-    "AuthAdvanced": { "type": "computed", "value": "(auth == Advanced)" }
+    "AuthAdvanced": { "type": "computed", "value": "(auth == Advanced)" },
+    "DB_Sqlite": { "type": "computed", "value": "(database == Sqlite)" },
+    "DB_Postgres": { "type": "computed", "value": "(database == Postgres)" },
+    "SeedDemoData": { "type": "computed", "value": "(seedDemoData == true)" },
+    "UseHttps": { "type": "computed", "value": "(useHttps == true)" }
   },
   "sources": [
     {
       "source": "./",
       "target": "./",
       "exclude": [
+        ".template.config/**",
+        "_testgen/**",
         "artifacts/**",
         "build/**",
         "_ref/**",
@@ -44,7 +114,8 @@
         ".cursor/**",
         "**/*.plan.md",
         "HelixCarbon.TemplatePack.csproj",
-        "LocalBuild.props"
+        "LocalBuild.props",
+        "**/Properties/launchSettings.json"
       ],
       "modifiers": [
         {
@@ -66,6 +137,32 @@
             "**/Features/Auth/RegisterPage.razor",
             "**/Features/Auth/ProfilePage.razor",
             "**/Features/Auth/AzureLoginPage.razor"
+          ]
+        },
+        {
+          "condition": "(database == Sqlite)",
+          "exclude": [ "**/Data/Seed.Postgres.sql" ]
+        },
+        {
+          "condition": "(database == Postgres)",
+          "exclude": [ "**/Data/Seed.sql" ]
+        },
+        {
+          "condition": "(UseHttps)",
+          "rename": {
+            "src/HelixCarbon.Server/Properties/launchSettings.https.json": "src/HelixCarbon.Server/Properties/launchSettings.json"
+          },
+          "exclude": [
+            "**/Properties/launchSettings.http.json"
+          ]
+        },
+        {
+          "condition": "(!UseHttps)",
+          "rename": {
+            "src/HelixCarbon.Server/Properties/launchSettings.http.json": "src/HelixCarbon.Server/Properties/launchSettings.json"
+          },
+          "exclude": [
+            "**/Properties/launchSettings.https.json"
           ]
         }
       ]

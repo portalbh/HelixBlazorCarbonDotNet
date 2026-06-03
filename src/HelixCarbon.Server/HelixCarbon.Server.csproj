@@ -12,8 +12,12 @@
     <ProjectReference Include="..\HelixCarbon.Shared\HelixCarbon.Shared.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="Dapper" />
+    <!--#if (DB_Sqlite)-->
     <PackageReference Include="Microsoft.Data.Sqlite" />
+    <!--#endif-->
+    <!--#if (DB_Postgres)-->
     <PackageReference Include="Npgsql" />
+    <!--#endif-->
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.Identity.Web" />
   </ItemGroup>

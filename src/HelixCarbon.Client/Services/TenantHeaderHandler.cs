@@ -1,13 +1,15 @@
+using Microsoft.Extensions.Configuration;
+
 namespace HelixCarbon.Client.Services;
 
 /// <summary>
 /// Sends X-Tenant for local dev when subdomain routing is unavailable.
 /// Remove or replace with subdomain-only resolution in production.
 /// </summary>
-public sealed class TenantHeaderHandler : DelegatingHandler
+public sealed class TenantHeaderHandler(IConfiguration configuration) : DelegatingHandler
 {
-    public const string DefaultTenantSlug = "demo";
-    public string TenantSlug { get; set; } = DefaultTenantSlug;
+    public string TenantSlug { get; set; } =
+        configuration["App:DefaultTenantSlug"] ?? "demo";
 
     protected override Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
