@@ -5,7 +5,6 @@ using HelixCarbon.Server.Endpoints;
 using HelixCarbon.Server.Extensions;
 using HelixCarbon.Server.Middleware;
 using CarbonBlazor;
-using ApexCharts;
 #if AuthAzure
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
@@ -19,7 +18,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHelixCarbonData();
 builder.Services.AddHelixCarbonAuth(builder.Configuration);
 builder.Services.AddCarbonBlazor();
-builder.Services.AddApexCharts();
 builder.Services.AddHelixCarbonClientForServerPrerender();
 
 builder.Services.AddRazorComponents()

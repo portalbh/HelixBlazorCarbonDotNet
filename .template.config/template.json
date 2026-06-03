@@ -20,6 +20,7 @@
     { "path": "HelixCarbon.app.slnLaunch" },
     { "path": "src/HelixCarbon.Shared/HelixCarbon.Shared.csproj" },
     { "path": "src/HelixCarbon.Client/HelixCarbon.Client.csproj" },
+    { "path": "src/HelixCarbon.Client.Charts/HelixCarbon.Client.Charts.csproj" },
     { "path": "src/HelixCarbon.Server/HelixCarbon.Server.csproj" },
     { "path": "lib/CarbonBlazor/CarbonBlazor.csproj" }
   ],
@@ -147,7 +148,17 @@
           "exclude": [
             "**/Features/Auth/LoginPage.razor",
             "**/Features/Auth/RegisterPage.razor",
-            "**/Features/Auth/ProfilePage.razor"
+            "**/Features/Auth/ProfilePage.razor",
+            "**/Components/Layout/HelixProfileMenuBff.razor",
+            "**/Components/Layout/HelixSideNavAuthBff.razor"
+          ]
+        },
+        {
+          "condition": "(authMode == BFF || authMode == Advanced)",
+          "exclude": [
+            "**/Features/Auth/AzureLoginPage.razor",
+            "**/Components/Layout/HelixProfileMenuAzure.razor",
+            "**/Components/Layout/HelixSideNavAuthAzure.razor"
           ]
         },
         {
@@ -156,7 +167,12 @@
             "**/Features/Auth/LoginPage.razor",
             "**/Features/Auth/RegisterPage.razor",
             "**/Features/Auth/ProfilePage.razor",
-            "**/Features/Auth/AzureLoginPage.razor"
+            "**/Features/Auth/AzureLoginPage.razor",
+            "**/Components/Layout/HelixProfileMenuBff.razor",
+            "**/Components/Layout/HelixProfileMenuAzure.razor",
+            "**/Components/Layout/HelixProfileMenuShell.razor",
+            "**/Components/Layout/HelixSideNavAuthBff.razor",
+            "**/Components/Layout/HelixSideNavAuthAzure.razor"
           ]
         },
         {

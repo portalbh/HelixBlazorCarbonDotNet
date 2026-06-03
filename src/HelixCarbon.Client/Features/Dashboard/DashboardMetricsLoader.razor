@@ -1,0 +1,82 @@
+@rendermode InteractiveWebAssembly
+@inject HelixApiClient Api
+@inject LazyAssemblyLoader LazyAssemblyLoader
+
+@if (_loading)
+{
+    <CbInlineLoading Description="Loading metrics..." />
+}
+else if (_metrics is null)
+{
+    <CbNotification Kind="CbNotificationKind.Error" Title="Unable to load metrics" Subtitle="@_error" />
+}
+else
+{
+    @if (_chartType is null)
+    {
+        <div class="helix-chart helix-chart--placeholder" aria-hidden="true">
+            <CbInlineLoading Description="Loading chart module..." />
+        </div>
+    }
+    else
+    {
+        <DynamicComponent Type="_chartType" Parameters="_chartParameters" />
+    }
+
+    <CbTile>
+        <p>Products in tenant: <strong>@(_metrics.ProductCounts.LastOrDefault())</strong></p>
+    </CbTile>
+}
+
+@code {
+    private const string ChartsAssemblyName = "HelixCarbon.Client.Charts";
+    private const string ChartComponentName = "HelixCarbon.Client.Charts.DashboardRevenueChart";
+
+    private bool _loading = true;
+    private string? _error;
+    private DashboardMetricsDto? _metrics;
+    private Type? _chartType;
+    private Dictionary<string, object?> _chartParameters = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _metrics = await Api.GetDashboardMetricsAsync();
+            if (_metrics is not null)
+            {
+                await LoadChartComponentAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task LoadChartComponentAsync()
+    {
+        if (_metrics is null)
+        {
+            return;
+        }
+
+        var assemblies = await LazyAssemblyLoader.LoadAssembliesAsync([$"{ChartsAssemblyName}.wasm"]);
+        var chartsAssembly = assemblies.SingleOrDefault(a => a.GetName().Name == ChartsAssemblyName)
+            ?? throw new InvalidOperationException($"Lazy assembly '{ChartsAssemblyName}' was not loaded.");
+
+        _chartType = chartsAssembly.GetType(ChartComponentName)
+            ?? throw new InvalidOperationException($"Type '{ChartComponentName}' was not found.");
+
+        _chartParameters = new Dictionary<string, object?>
+        {
+            ["Labels"] = _metrics.Labels,
+            ["Revenue"] = _metrics.Revenue,
+            ["ShowPlaceholder"] = false
+        };
+    }
+}

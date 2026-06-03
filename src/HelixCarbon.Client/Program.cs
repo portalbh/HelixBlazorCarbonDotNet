@@ -1,6 +1,6 @@
-using ApexCharts;
 using CarbonBlazor;
 using HelixCarbon.Client;
+using HelixCarbon.Client.Charts;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 #if AuthAzure
 using Microsoft.Authentication.WebAssembly.Msal;
@@ -9,7 +9,7 @@ using Microsoft.Authentication.WebAssembly.Msal;
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.Services.AddCarbonBlazor();
-builder.Services.AddApexCharts();
+builder.Services.AddHelixCharts();
 builder.Services.AddHelixCarbonWasmClient(new Uri(builder.HostEnvironment.BaseAddress));
 
 #if AuthAzure

@@ -3,6 +3,7 @@
   <Folder Name="/src/">
     <Project Path="src/HelixCarbon.Shared/HelixCarbon.Shared.csproj" />
     <Project Path="src/HelixCarbon.Client/HelixCarbon.Client.csproj" />
+    <Project Path="src/HelixCarbon.Client.Charts/HelixCarbon.Client.Charts.csproj" />
   </Folder>
   <Folder Name="/lib/">
     <Project Path="lib/CarbonBlazor/CarbonBlazor.csproj" />

@@ -1,0 +1,42 @@
+@if (ShowPlaceholder)
+{
+    <div class="helix-chart helix-chart--placeholder" aria-hidden="true">
+        <CbInlineLoading Description="Preparing chart..." />
+    </div>
+}
+else
+{
+    <div class="helix-chart">
+        <ApexChart TItem="ChartPoint" Title="Revenue by period" Height="320">
+            <ApexPointSeries TItem="ChartPoint"
+                             Items="_points"
+                             Name="Revenue"
+                             SeriesType="SeriesType.Bar"
+                             XValue="e => e.Label"
+                             YValue="e => e.Value" />
+        </ApexChart>
+    </div>
+}
+
+@code {
+    [Parameter] public IReadOnlyList<string> Labels { get; set; } = [];
+    [Parameter] public IReadOnlyList<decimal> Revenue { get; set; } = [];
+    [Parameter] public bool ShowPlaceholder { get; set; }
+
+    private IReadOnlyList<ChartPoint> _points = [];
+
+    protected override void OnParametersSet()
+    {
+        if (ShowPlaceholder || Labels.Count == 0)
+        {
+            _points = [];
+            return;
+        }
+
+        _points = Labels
+            .Select((label, index) => new ChartPoint(label, Revenue.ElementAtOrDefault(index)))
+            .ToList();
+    }
+
+    private sealed record ChartPoint(string Label, decimal Value);
+}
