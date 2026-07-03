@@ -10,7 +10,9 @@ public static class ClientServiceCollectionExtensions
     public static IServiceCollection AddHelixCarbonClientForServerPrerender(this IServiceCollection services)
     {
         services.AddHttpContextAccessor();
+        services.AddScoped<AuthSessionSignal>();
         services.AddScoped<TenantHeaderHandler>();
+        services.AddScoped<UnauthorizedResponseHandler>();
         services.AddScoped<ServerRequestForwardingHandler>();
         services.AddScoped<HelixApiClient>();
         services.AddScoped<AuthStateService>();
@@ -19,8 +21,11 @@ public static class ClientServiceCollectionExtensions
             var forwarding = sp.GetRequiredService<ServerRequestForwardingHandler>();
             forwarding.InnerHandler = new HttpClientHandler { AllowAutoRedirect = false };
 
+            var unauthorizedHandler = sp.GetRequiredService<UnauthorizedResponseHandler>();
+            unauthorizedHandler.InnerHandler = forwarding;
+
             var tenantHandler = sp.GetRequiredService<TenantHeaderHandler>();
-            tenantHandler.InnerHandler = forwarding;
+            tenantHandler.InnerHandler = unauthorizedHandler;
 
             var context = sp.GetRequiredService<IHttpContextAccessor>().HttpContext
                 ?? throw new InvalidOperationException("HttpContext is required for prerender.");

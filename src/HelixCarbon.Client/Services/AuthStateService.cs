@@ -2,7 +2,7 @@ using HelixCarbon.Shared.DTOs;
 
 namespace HelixCarbon.Client.Services;
 
-public sealed class AuthStateService(HelixApiClient api)
+public sealed class AuthStateService
 {
     public UserProfileDto? Profile { get; private set; }
 
@@ -12,6 +12,14 @@ public sealed class AuthStateService(HelixApiClient api)
 
     public event Action? Changed;
 
+    public AuthStateService(HelixApiClient api, AuthSessionSignal sessionSignal)
+    {
+        _api = api;
+        sessionSignal.Unauthorized += Clear;
+    }
+
+    private readonly HelixApiClient _api;
+
     public async Task EnsureLoadedAsync()
     {
         if (IsLoaded)
@@ -20,7 +28,7 @@ public sealed class AuthStateService(HelixApiClient api)
         }
 
 #if AuthBFF || AuthAdvanced
-        Profile = await api.GetProfileAsync();
+        Profile = await _api.GetProfileAsync();
 #endif
         IsLoaded = true;
         Changed?.Invoke();

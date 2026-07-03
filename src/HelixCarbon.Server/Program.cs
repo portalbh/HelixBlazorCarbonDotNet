@@ -48,6 +48,21 @@ app.UseWhen(
     branch => branch.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true));
 app.UseHttpsRedirection();
 app.UseAntiforgery();
+app.Use(async (context, next) =>
+{
+    context.Response.OnStarting(() =>
+    {
+        if (context.Response.ContentType?.StartsWith("text/html", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            context.Response.Headers.CacheControl = "no-store, no-cache";
+            context.Response.Headers.Pragma = "no-cache";
+        }
+
+        return Task.CompletedTask;
+    });
+
+    await next();
+});
 
 #if AuthAzure
 app.UseAuthentication();

@@ -9,11 +9,10 @@
         <Actions>
             <div class="helix-header-actions">
                 <CbThemeSwitcher />
-#if AuthBFF || AuthAdvanced
-                <HelixProfileMenuBff />
-#elif AuthAzure
-                <HelixProfileMenuAzure />
-#endif
+                @if (ProfileMenuType is not null)
+                {
+                    <DynamicComponent Type="ProfileMenuType" />
+                }
             </div>
         </Actions>
     </CbHeader>
@@ -23,11 +22,10 @@
         <CbSideNavLink Href="/products" IconName="CbIconName.DocumentBlank">Products</CbSideNavLink>
         <CbSideNavLink Href="/tenants" IconName="CbIconName.User">Tenants</CbSideNavLink>
         <CbSideNavLink Href="/onboarding" IconName="CbIconName.Add">Onboarding</CbSideNavLink>
-#if AuthBFF || AuthAdvanced
-        <HelixSideNavAuthBff />
-#elif AuthAzure
-        <HelixSideNavAuthAzure />
-#endif
+        @if (SideNavAuthType is not null)
+        {
+            <DynamicComponent Type="SideNavAuthType" />
+        }
     </CbSideNav>
     <CbContent>
         @if (ShowTenantBanner)
@@ -39,7 +37,33 @@
 </CbThemeProvider>
 
 @code {
+    private static readonly Type? ProfileMenuType =
+        ResolveLayoutComponentType("HelixProfileMenuBff", "HelixProfileMenuAzure");
+
+    private static readonly Type? SideNavAuthType =
+        ResolveLayoutComponentType("HelixSideNavAuthBff", "HelixSideNavAuthAzure");
+
     private string TenantSlug => Configuration["App:DefaultTenantSlug"] ?? "demo";
 
     private bool ShowTenantBanner => Configuration.GetValue("App:ShowTenantBanner", false);
+
+    private static Type? ResolveLayoutComponentType(params string[] componentNames)
+    {
+        var layoutNamespace = typeof(MainLayout).Namespace;
+        if (string.IsNullOrWhiteSpace(layoutNamespace))
+        {
+            return null;
+        }
+
+        foreach (var componentName in componentNames)
+        {
+            var componentType = typeof(MainLayout).Assembly.GetType($"{layoutNamespace}.{componentName}");
+            if (componentType is not null)
+            {
+                return componentType;
+            }
+        }
+
+        return null;
+    }
 }

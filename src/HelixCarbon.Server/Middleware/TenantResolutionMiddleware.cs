@@ -1,5 +1,7 @@
 using HelixCarbon.Server.Data;
 using HelixCarbon.Server.Services;
+using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 
 namespace HelixCarbon.Server.Middleware;
 
@@ -7,8 +9,10 @@ namespace HelixCarbon.Server.Middleware;
 /// Resolves tenant from subdomain ({slug}.localhost) or X-Tenant header.
 /// To use database-per-tenant, look up a connection string by slug here instead of shared ITenantContext.
 /// </summary>
-public sealed class TenantResolutionMiddleware(RequestDelegate next)
+public sealed class TenantResolutionMiddleware(RequestDelegate next, IConfiguration configuration)
 {
+    private const string TenantHeaderName = "X-Tenant";
+
     private static readonly PathString[] BypassPaths =
     [
         "/api/health",
@@ -34,6 +38,7 @@ public sealed class TenantResolutionMiddleware(RequestDelegate next)
         if (string.IsNullOrWhiteSpace(slug))
         {
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            StampNoStore(context.Response.Headers);
             await context.Response.WriteAsJsonAsync(new
             {
                 error = "Tenant not specified. Use subdomain ({slug}.localhost) or X-Tenant header."
@@ -49,6 +54,7 @@ public sealed class TenantResolutionMiddleware(RequestDelegate next)
         if (row is null)
         {
             context.Response.StatusCode = StatusCodes.Status404NotFound;
+            StampNoStore(context.Response.Headers);
             await context.Response.WriteAsJsonAsync(new { error = $"Tenant '{slug}' was not found." });
             return;
         }
@@ -56,6 +62,13 @@ public sealed class TenantResolutionMiddleware(RequestDelegate next)
         var tenant = RowMapper.ToTenant(row);
         tenantContext.SetTenant(tenant);
         context.Items["TenantSlug"] = tenant.Slug;
+        context.Response.OnStarting(() =>
+        {
+            StampNoStore(context.Response.Headers);
+            AppendVary(context.Response.Headers, TenantHeaderName);
+            AppendVary(context.Response.Headers, HeaderNames.Cookie);
+            return Task.CompletedTask;
+        });
         await next(context);
     }
 
@@ -74,9 +87,10 @@ public sealed class TenantResolutionMiddleware(RequestDelegate next)
                 path.Value.EndsWith(".js", StringComparison.OrdinalIgnoreCase));
     }
 
-    private static string? ResolveSlug(HttpContext context)
+    private string? ResolveSlug(HttpContext context)
     {
-        if (context.Request.Headers.TryGetValue("X-Tenant", out var header) &&
+        if (configuration.GetValue("App:AllowTenantHeader", false) &&
+            context.Request.Headers.TryGetValue(TenantHeaderName, out var header) &&
             !string.IsNullOrWhiteSpace(header))
         {
             return header.ToString().Trim().ToLowerInvariant();
@@ -95,5 +109,24 @@ public sealed class TenantResolutionMiddleware(RequestDelegate next)
         }
 
         return null;
+    }
+
+    private static void StampNoStore(IHeaderDictionary headers)
+    {
+        headers[HeaderNames.CacheControl] = "no-store, no-cache";
+        headers[HeaderNames.Pragma] = "no-cache";
+    }
+
+    private static void AppendVary(IHeaderDictionary headers, string value)
+    {
+        var existing = headers[HeaderNames.Vary];
+        if (existing.Any(header => header is not null && header
+                .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Any(part => string.Equals(part, value, StringComparison.OrdinalIgnoreCase))))
+        {
+            return;
+        }
+
+        headers[HeaderNames.Vary] = StringValues.Concat(existing, value);
     }
 }

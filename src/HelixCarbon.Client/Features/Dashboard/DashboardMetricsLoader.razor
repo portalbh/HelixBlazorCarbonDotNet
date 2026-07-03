@@ -1,10 +1,18 @@
 @rendermode InteractiveWebAssembly
 @inject HelixApiClient Api
 @inject LazyAssemblyLoader LazyAssemblyLoader
+@inject NavigationManager Navigation
 
 @if (_loading)
 {
     <CbInlineLoading Description="Loading metrics..." />
+}
+else if (_reloadRequired)
+{
+    <CbNotification Kind="CbNotificationKind.Error"
+                    Title="New app version available"
+                    Subtitle="Dashboard charts could not load. Reload to update the app assets." />
+    <CbButton OnClick="ReloadApplication">Reload</CbButton>
 }
 else if (_metrics is null)
 {
@@ -33,6 +41,7 @@ else
     private const string ChartComponentName = "HelixCarbon.Client.Charts.DashboardRevenueChart";
 
     private bool _loading = true;
+    private bool _reloadRequired;
     private string? _error;
     private DashboardMetricsDto? _metrics;
     private Type? _chartType;
@@ -65,18 +74,27 @@ else
             return;
         }
 
-        var assemblies = await LazyAssemblyLoader.LoadAssembliesAsync([$"{ChartsAssemblyName}.wasm"]);
-        var chartsAssembly = assemblies.SingleOrDefault(a => a.GetName().Name == ChartsAssemblyName)
-            ?? throw new InvalidOperationException($"Lazy assembly '{ChartsAssemblyName}' was not loaded.");
-
-        _chartType = chartsAssembly.GetType(ChartComponentName)
-            ?? throw new InvalidOperationException($"Type '{ChartComponentName}' was not found.");
-
-        _chartParameters = new Dictionary<string, object?>
+        try
         {
-            ["Labels"] = _metrics.Labels,
-            ["Revenue"] = _metrics.Revenue,
-            ["ShowPlaceholder"] = false
-        };
+            var assemblies = await LazyAssemblyLoader.LoadAssembliesAsync([$"{ChartsAssemblyName}.wasm"]);
+            var chartsAssembly = assemblies.SingleOrDefault(a => a.GetName().Name == ChartsAssemblyName)
+                ?? throw new InvalidOperationException($"Lazy assembly '{ChartsAssemblyName}' was not loaded.");
+
+            _chartType = chartsAssembly.GetType(ChartComponentName)
+                ?? throw new InvalidOperationException($"Type '{ChartComponentName}' was not found.");
+
+            _chartParameters = new Dictionary<string, object?>
+            {
+                ["Labels"] = _metrics.Labels,
+                ["Revenue"] = _metrics.Revenue,
+                ["ShowPlaceholder"] = false
+            };
+        }
+        catch
+        {
+            _reloadRequired = true;
+        }
     }
+
+    private void ReloadApplication() => Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
 }

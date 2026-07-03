@@ -78,6 +78,8 @@ Open `https://localhost:7151` and send tenant context:
 - Header: `X-Tenant: demo` (default dev tenant), or
 - Subdomain: `demo.localhost` (configure hosts file as needed)
 
+`X-Tenant` is a development convenience only. The server reads it only when `App:AllowTenantHeader` is `true` (enabled in `appsettings.Development.json`). Production should use subdomain tenant routing and keep `App:AllowTenantHeader` false.
+
 **Demo login** (`--auth BFF` or `Advanced`): `admin@demo.local` / `Admin123!`
 
 ## Project layout
